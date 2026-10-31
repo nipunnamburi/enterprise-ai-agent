@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { sendAgentChat, fetchConversations, fetchConversationDetails } from "@/lib/api";
 import { ExecutionStepInfo, MessageItem } from "@/types";
 
@@ -199,8 +200,27 @@ function ChatContent() {
                 <span className="text-[11px] text-slate-500">{new Date(msg.created_at).toLocaleTimeString()}</span>
               </div>
 
-              <div className="text-xs text-slate-800 whitespace-pre-wrap leading-relaxed">
-                {msg.content}
+              <div className="text-xs text-slate-800 leading-relaxed space-y-2 prose prose-xs max-w-none">
+                {msg.role === "assistant" ? (
+                  <ReactMarkdown
+                    components={{
+                      h1: ({ ...props }) => <h1 className="text-sm font-bold text-[#1e3a8a] mt-2 mb-1" {...props} />,
+                      h2: ({ ...props }) => <h2 className="text-xs font-bold text-[#1e3a8a] mt-2 mb-1" {...props} />,
+                      h3: ({ ...props }) => <h3 className="text-xs font-semibold text-slate-800 mt-2 mb-1" {...props} />,
+                      p: ({ ...props }) => <p className="mb-1 leading-normal" {...props} />,
+                      ul: ({ ...props }) => <ul className="list-disc pl-4 mb-1 space-y-0.5" {...props} />,
+                      ol: ({ ...props }) => <ol className="list-decimal pl-4 mb-1 space-y-0.5" {...props} />,
+                      li: ({ ...props }) => <li className="leading-normal" {...props} />,
+                      strong: ({ ...props }) => <strong className="font-semibold text-slate-900" {...props} />,
+                      em: ({ ...props }) => <em className="italic text-slate-700" {...props} />,
+                      code: ({ ...props }) => <code className="bg-slate-100 text-slate-800 px-1 py-0.5 rounded text-[11px] font-mono" {...props} />,
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                )}
               </div>
 
               {/* Citations and Tools */}

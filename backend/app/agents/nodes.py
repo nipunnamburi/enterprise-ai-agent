@@ -11,11 +11,16 @@ from app.schemas.tool import TOOL_ARGUMENT_SCHEMAS
 from app.tools.registry import tool_registry
 from app.memory.long_term import long_term_memory
 from app.core.database import SessionLocal
+from app.core.guardrails import compliance_guardrails
 
 def analyze_request_node(state: AgentState) -> Dict[str, Any]:
     start_time = time.time()
     task_text = state.get("current_task", "")
     user_mems = state.get("user_memories", [])
+    
+    # Run pre-execution compliance & PII inspection
+    guardrail_result = compliance_guardrails.inspect_and_sanitize(task_text)
+    sanitized_task = guardrail_result.sanitized_text
     
     format_pref = "standard professional"
     for mem in user_mems:
@@ -25,15 +30,27 @@ def analyze_request_node(state: AgentState) -> Dict[str, Any]:
             format_pref = "detailed executive"
 
     duration = round((time.time() - start_time) * 1000, 2)
+    guardrail_summary = ""
+    if guardrail_result.findings:
+        categories = ", ".join(set(f.category for f in guardrail_result.findings))
+        guardrail_summary = f" [Compliance Alert: Redacted/Masked {len(guardrail_result.findings)} items ({categories})]"
+
     trace_entry = {
         "step_name": "analyze_request",
         "status": "completed",
         "duration_ms": duration,
-        "description": f"Analyzed user request intent and verified {len(user_mems)} active memory constraints (format: {format_pref}).",
-        "details": {"format_preference": format_pref, "objective": task_text[:100]}
+        "description": f"Analyzed user request intent and verified {len(user_mems)} active memory constraints (format: {format_pref}).{guardrail_summary}",
+        "details": {
+            "format_preference": format_pref,
+            "objective": sanitized_task[:100],
+            "compliance_findings_count": len(guardrail_result.findings),
+            "has_pii": guardrail_result.has_pii,
+            "has_credentials": guardrail_result.has_credentials
+        }
     }
     
     return {
+        "current_task": sanitized_task,
         "execution_trace": state.get("execution_trace", []) + [trace_entry],
         "iterations": state.get("iterations", 0) + 1
     }
@@ -456,17 +473,25 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
     else:
         answer = f"Completed analysis for: **{task_text}**. All required agent verification steps have finished successfully."
 
+    # Post-generation compliance check to ensure sensitive data is not leaked in final answer
+    output_guardrail = compliance_guardrails.inspect_and_sanitize(answer)
+    clean_answer = output_guardrail.sanitized_text
+
     duration = round((time.time() - start_time) * 1000, 2)
     trace_entry = {
         "step_name": "generate_response",
         "status": "completed",
         "duration_ms": duration,
         "description": "Synthesized final authoritative response with strict citation safeguards and deterministic tool calculations.",
-        "details": {"sources_count": len(sources), "tools_used_count": len(tools_used)}
+        "details": {
+            "sources_count": len(sources),
+            "tools_used_count": len(tools_used),
+            "output_compliance_findings": len(output_guardrail.findings)
+        }
     }
 
     return {
-        "final_answer": answer,
+        "final_answer": clean_answer,
         "sources": list(set(sources)),
         "confidence": "high",
         "key_findings": ["Factual policy compliance verified.", "Deterministic mathematical computation applied.", "Authoritative citations attached."],

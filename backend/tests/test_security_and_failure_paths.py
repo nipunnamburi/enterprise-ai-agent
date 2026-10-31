@@ -70,23 +70,30 @@ def auth_header(user_id: str):
 # ---------------------------------------------------------------------------
 
 def test_missing_authentication_rejected():
-    """Endpoints requiring authentication must return 401 when no token is supplied."""
-    # /tools
-    res = client.get("/tools")
-    assert res.status_code == 401
-    assert "Authentication credentials were not provided" in res.json()["detail"]
+    """Endpoints requiring authentication must return 401 when no token is supplied and demo auth is off."""
+    from app.core.config import settings
+    orig = settings.ALLOW_DEMO_AUTH
+    try:
+        settings.ALLOW_DEMO_AUTH = False
 
-    # /conversations
-    res = client.get("/conversations")
-    assert res.status_code == 401
+        # /tools
+        res = client.get("/tools")
+        assert res.status_code == 401
+        assert "Authentication credentials were not provided" in res.json()["detail"]
 
-    # /documents
-    res = client.get("/documents")
-    assert res.status_code == 401
+        # /conversations
+        res = client.get("/conversations")
+        assert res.status_code == 401
 
-    # /agent/chat
-    res = client.post("/agent/chat", json={"message": "hello"})
-    assert res.status_code == 401
+        # /documents
+        res = client.get("/documents")
+        assert res.status_code == 401
+
+        # /agent/chat
+        res = client.post("/agent/chat", json={"message": "hello"})
+        assert res.status_code == 401
+    finally:
+        settings.ALLOW_DEMO_AUTH = orig
 
 
 def test_inactive_user_rejected(setup_test_users):
