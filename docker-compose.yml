@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: enterprise_ai_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+      POSTGRES_DB: ${POSTGRES_DB:-enterprise_ai_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: enterprise_ai_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/enterprise_ai_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY:-super-secret-enterprise-key}
+      - CHROMA_PERSIST_DIR=/app/data/chroma_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/app/data/chroma_db
+      - ./data/documents:/app/data/documents
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: enterprise_ai_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  chroma_data:

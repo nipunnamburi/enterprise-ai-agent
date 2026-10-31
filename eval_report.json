@@ -1,0 +1,331 @@
+{
+  "total_test_cases": 20,
+  "rag_retrieval_accuracy_pct": 90.9,
+  "tool_selection_accuracy_pct": 100.0,
+  "answer_accuracy_pct": 85.0,
+  "average_latency_seconds": 0.01,
+  "timestamp": "2026-09-24 02:38:50 UTC",
+  "test_results": [
+    {
+      "id": 1,
+      "category": "RAG",
+      "question": "What is the return window duration in our refund policy?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.04,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 2,
+      "category": "RAG",
+      "question": "What restocking fee applies to standard undamaged hardware returns?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: customer_support_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 3,
+      "category": "RAG",
+      "question": "Is restocking fee charged for defective or DOA items under our return policy?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: customer_support_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 4,
+      "category": "RAG",
+      "question": "How many days of paid time off do full-time employees receive according to the employee handbook?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: employee_handbook.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 5,
+      "category": "RAG",
+      "question": "What is the remote work home office stipend and monthly internet reimbursement in the handbook?",
+      "overall_passed": false,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": false,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: employee_handbook.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 6,
+      "category": "RAG",
+      "question": "What uptime percentage is guaranteed for Enterprise Cloud Suite in the product documentation?",
+      "overall_passed": false,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": false,
+      "retrieval_passed": false,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents",
+        "calculator"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: employee_handbook.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 7,
+      "category": "RAG",
+      "question": "What are the response time SLAs for urgent and high priority support tickets?",
+      "overall_passed": false,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": false,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents",
+        "customer_order_lookup"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: customer_support_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 8,
+      "category": "RAG",
+      "question": "What is the maximum discretionary goodwill credit a customer success manager can issue?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: customer_support_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 9,
+      "category": "Tool_Calling",
+      "question": "Calculate the refund for a $2,499.00 order subject to a 15% restocking fee deduction.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents",
+        "customer_order_lookup",
+        "calculator"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 10,
+      "category": "Tool_Calling",
+      "question": "Look up order 1024 and check the delivery date, status, and total amount.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "customer_order_lookup"
+      ],
+      "sources": []
+    },
+    {
+      "id": 11,
+      "category": "Tool_Calling",
+      "question": "Query the total actual sales revenue vs target revenue for Q3 2024.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "query_database"
+      ],
+      "sources": []
+    },
+    {
+      "id": 12,
+      "category": "Tool_Calling",
+      "question": "Calculate the percentage difference between actual sales of 720000 and target of 650000.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "calculator",
+        "query_database"
+      ],
+      "sources": []
+    },
+    {
+      "id": 13,
+      "category": "Tool_Calling",
+      "question": "Query customer database for customer code CUST-1001.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "query_database"
+      ],
+      "sources": []
+    },
+    {
+      "id": 14,
+      "category": "Multi_Step",
+      "question": "Analyze the customer complaint for order 1024, verify our refund policy, check delivery eligibility, calculate the refund, and prepare a response.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents",
+        "customer_order_lookup",
+        "calculator",
+        "generate_report"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: customer_support_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 15,
+      "category": "Multi_Step",
+      "question": "Compare Q3 sales against our target, query the database, calculate the percentage difference, and summarize regional performance.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "calculator",
+        "query_database"
+      ],
+      "sources": []
+    },
+    {
+      "id": 16,
+      "category": "Multi_Step",
+      "question": "Investigate ticket TICK-501, check order 1024 warranty and return policy, and determine if restocking fee applies.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents",
+        "customer_order_lookup"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]",
+        "[Source: product_documentation.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 17,
+      "category": "Memory",
+      "question": "My preferred response style is concise bullet points.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [],
+      "sources": []
+    },
+    {
+      "id": 18,
+      "category": "Memory",
+      "question": "Summarize the refund policy under my preferred style.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: refund_policy.pdf, page 1]"
+      ]
+    },
+    {
+      "id": 19,
+      "category": "Guardrails",
+      "question": "What is our company policy on corporate spaceship refueling protocols?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": []
+    },
+    {
+      "id": 20,
+      "category": "Guardrails",
+      "question": "Check order 999999 for refund eligibility.",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "answer_accuracy_passed": true,
+      "retrieval_passed": true,
+      "latency_s": 0.01,
+      "tools_used": [
+        "customer_order_lookup"
+      ],
+      "sources": []
+    }
+  ]
+}

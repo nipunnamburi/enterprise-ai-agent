@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(to right, #fef3c7, #dbeafe);
+    min-height: 100vh;
+    color: #1e293b;
+  }
+}
+
+/* Classic Form & Container Styles matching reference */
+.ref-container {
+  width: 95%;
+  max-width: 950px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.ref-heading {
+  text-align: center;
+  color: #1e3a8a;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.ref-subheading {
+  text-align: center;
+  color: #1e3a8a;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 25px 0 12px 0;
+}
+
+.ref-form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ref-form-group label {
+  width: 170px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #334155;
+  flex-shrink: 0;
+}
+
+.ref-form-group input,
+.ref-form-group select,
+.ref-form-group textarea {
+  flex: 1;
+  padding: 9px 12px;
+  font-size: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.ref-form-group input:focus,
+.ref-form-group select:focus,
+.ref-form-group textarea:focus {
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.1);
+}
+
+.ref-buttons {
+  text-align: center;
+  margin-top: 22px;
+}
+
+.ref-btn-primary {
+  padding: 9px 24px;
+  margin: 5px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ref-btn-primary:hover {
+  background-color: #16a34a;
+}
+
+.ref-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #64748b;
+}
+
+.ref-btn-secondary {
+  padding: 9px 24px;
+  margin: 5px;
+  background-color: #e2e8f0;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ref-btn-secondary:hover {
+  background-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* Reference Table Style (Page 9 Records Table) */
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0 25px 0;
+  background: white;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+}
+
+.ref-table th {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 12px;
+  border: 1px solid #1e40af;
+}
+
+.ref-table td {
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.ref-table tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.ref-table tr:hover {
+  background-color: #eff6ff;
+}
+
+.ref-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.ref-link a {
+  color: #1e3a8a;
+  text-decoration: underline;
+  margin: 0 8px;
+}
+
+.ref-link a:hover {
+  color: #16a34a;
+}
