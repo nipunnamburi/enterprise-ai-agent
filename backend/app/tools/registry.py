@@ -7,6 +7,7 @@ from app.tools.customer_order_lookup import customer_order_lookup_tool
 from app.tools.web_search import web_search_tool
 from app.tools.generate_report import generate_report_tool
 from app.tools.deep_research import deep_research_tool
+from app.tools.mcp_client import MCPClient
 
 class ToolRegistry:
     def __init__(self):
@@ -24,6 +25,11 @@ class ToolRegistry:
         self.register(web_search_tool)
         self.register(generate_report_tool)
         self.register(deep_research_tool)
+        self.default_mcp_client = MCPClient()
+        self.sync_mcp_client(self.default_mcp_client)
+
+    def sync_mcp_client(self, client: MCPClient) -> List[str]:
+        return client.sync_to_registry(self)
 
     def get_tool(self, name: str) -> Optional[BaseTool]:
         return self._tools.get(name)
