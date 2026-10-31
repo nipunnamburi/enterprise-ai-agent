@@ -31,7 +31,8 @@ class EmbeddingService:
             except Exception as e:
                 print(f"[VectorStore] OpenAI embedding failed, using semantic fallback: {e}")
 
-        # Deterministic 128-dimensional dense semantic embedding fallback
+        # Deterministic 128-dimensional hashed-word token projection fallback
+        # (MD5 bit-projection with inverse-length weighting for zero-API-key local testing)
         return [self._generate_fallback_embedding(t) for t in texts]
 
     def _generate_fallback_embedding(self, text: str) -> List[float]:

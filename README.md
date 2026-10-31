@@ -84,8 +84,12 @@ flowchart TD
 | **1. AI Agents + LangGraph** | Stateful 8-node state machine with cyclical conditional edges (`select_tools` ↔ `execute_tools` ↔ `evaluate_results`), runtime budgeting, and step-by-step trace inspection. |
 | **2. Tool / Function Calling** | 6 registered tools with strict Pydantic JSON schemas: AST-parsed `calculator`, parameterized `query_database`, entity graph `customer_order_lookup`, Chroma `search_documents`, `web_search`, and `generate_report`. |
 | **3. Enterprise RAG Pipeline** | Ingests PDF, DOCX, TXT, CSV; recursive character chunking (600 chars, 100 overlap); page/section metadata tracking; strict citation formatting `[Source: refund_policy.pdf, page X]`. |
-| **4. Vector DB & Embeddings** | Chroma persistent client with HNSW indexing and cosine similarity search; metadata-filtered similarity queries; embedding generator with OpenAI + deterministic semantic fallback. |
+| **4. Vector DB & Embeddings** | Chroma persistent client with HNSW indexing and cosine similarity search; metadata-filtered similarity queries; supports OpenAI `text-embedding-3-small` with an offline deterministic 128-dimensional hashed-word projection fallback (MD5 token-hashing for zero-API-key local testing, distinct from trained neural embeddings). |
 | **5. Memory & Context Management** | Ephemeral task scratchpad in LangGraph `AgentState` + persistent long-term memory extraction in PostgreSQL/SQLite; conversation sliding window compression; prompt injection boundary tags. |
+
+### 🧠 Embedding Architecture & Deterministic Fallback Mode
+* **Production Semantic Mode**: When `OPENAI_API_KEY` is configured, the platform utilizes OpenAI's `text-embedding-3-small` dense neural embeddings (1536 dimensions) for deep semantic similarity.
+* **Offline Deterministic Fallback**: For zero-dependency local execution, grading, and automated testing without external API costs or model downloads, the service provides a deterministic 128-dimensional hashed-word token projection (via MD5 bit-projection and inverse-length weighting). This allows local Chroma indexing and cosine retrieval to function out of the box, operating as a deterministic lexical/keyword hashing approximation rather than a trained neural semantic model.
 
 ---
 
