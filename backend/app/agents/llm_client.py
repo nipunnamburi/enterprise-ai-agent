@@ -5,33 +5,19 @@ from typing import Type, TypeVar, Optional, Dict, Any, List
 from pydantic import BaseModel
 from app.core.config import settings
 from app.schemas.agent import AgentPlan, ToolDecision, EvaluationResult, AgentResponse
-from app.agents.providers import BaseLLMProvider, OpenAIProvider, AnthropicProvider, OllamaLocalProvider
 
 T = TypeVar("T", bound=BaseModel)
 
 class LLMClient:
-    def __init__(self, provider: Optional[str] = None):
-        self.provider_name = (provider or settings.LLM_PROVIDER).lower()
-        self.provider: Optional[BaseLLMProvider] = None
-
-        if self.provider_name == "openai" or (self.provider_name == "mock" and settings.OPENAI_API_KEY):
-            self.provider = OpenAIProvider()
-        elif self.provider_name == "anthropic":
-            self.provider = AnthropicProvider()
-        elif self.provider_name == "ollama":
-            self.provider = OllamaLocalProvider()
-
-    def set_provider(self, provider_name: str, **kwargs):
-        """Dynamically switch active LLM provider (Devo-inspired model-neutral switching)."""
-        self.provider_name = provider_name.lower()
-        if self.provider_name == "openai":
-            self.provider = OpenAIProvider(api_key=kwargs.get("api_key"))
-        elif self.provider_name == "anthropic":
-            self.provider = AnthropicProvider(api_key=kwargs.get("api_key"))
-        elif self.provider_name == "ollama":
-            self.provider = OllamaLocalProvider(base_url=kwargs.get("base_url"))
-        else:
-            self.provider = None
+    def __init__(self):
+        self.api_key = settings.OPENAI_API_KEY
+        self.client = None
+        if self.api_key:
+            try:
+                from openai import OpenAI
+                self.client = OpenAI(api_key=self.api_key)
+            except Exception:
+                self.client = None
 
     def generate_structured(
         self,
@@ -40,13 +26,22 @@ class LLMClient:
         user_prompt: str,
         model: Optional[str] = None
     ) -> T:
-        if self.provider:
+        model_name = model or settings.FAST_LLM_MODEL
+
+        if self.client:
             try:
-                res = self.provider.generate_structured(schema, system_prompt, user_prompt, model=model)
-                if res:
-                    return res
+                response = self.client.beta.chat.completions.parse(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    response_format=schema,
+                    temperature=0.1
+                )
+                return response.choices[0].message.parsed
             except Exception as e:
-                print(f"[LLMClient] Provider {self.provider_name} structured call failed: {e}. Falling back to deterministic engine.")
+                print(f"[LLMClient] OpenAI structured call failed: {e}. Falling back to deterministic engine.")
 
         return self._generate_fallback(schema, system_prompt, user_prompt)
 
@@ -121,7 +116,7 @@ class LLMClient:
             target_tool = None
             tool_match = re.search(r"\"current_tool_needed\":\s*\"([a-z_]+)\"", user_prompt)
             if not tool_match:
-                tool_match = re.search(r"tool\s*(?:name\s*is)?\s*['\"]([a-z_]+)['\"]", system_prompt)
+                tool_match = re.search(r"tool(?:_name|\s+name)?\s*(?:is)?\s*['\"]([a-z_]+)['\"]", system_prompt, re.IGNORECASE)
             if tool_match:
                 target_tool = tool_match.group(1)
 

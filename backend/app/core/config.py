@@ -36,11 +36,8 @@ class Settings(BaseSettings):
     )
     CHROMA_COLLECTION_NAME: str = os.getenv("CHROMA_COLLECTION_NAME", "enterprise_knowledge_base")
     
-    # LLM & Multi-Provider Architecture (Devo-inspired)
-    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "mock")  # openai, anthropic, ollama, mock
+    # OpenAI & LLM
     OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY", None)
-    ANTHROPIC_API_KEY: Optional[str] = os.getenv("ANTHROPIC_API_KEY", None)
-    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o")
     FAST_LLM_MODEL: str = os.getenv("FAST_LLM_MODEL", "gpt-4o-mini")
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")

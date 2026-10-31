@@ -8,9 +8,9 @@
     "numerical_accuracy_pct": 62.5,
     "mean_semantic_similarity": 0.343,
     "mean_token_f1_score": 0.317,
-    "average_latency_seconds": 0.008
+    "average_latency_seconds": 0.01
   },
-  "timestamp": "2026-10-31 18:53:21 UTC",
+  "timestamp": "2026-10-31 19:00:06 UTC",
   "test_results": [
     {
       "id": 1,
@@ -24,7 +24,7 @@
       "token_precision": 0.1023,
       "token_recall": 0.6,
       "token_f1": 0.1748,
-      "latency_s": 0.028,
+      "latency_s": 0.035,
       "tools_used": [
         "search_documents"
       ],
@@ -45,7 +45,7 @@
       "token_precision": 0.0795,
       "token_recall": 0.5833,
       "token_f1": 0.14,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [
         "search_documents"
       ],
@@ -87,7 +87,7 @@
       "token_precision": 0.3714,
       "token_recall": 0.8667,
       "token_f1": 0.52,
-      "latency_s": 0.006,
+      "latency_s": 0.008,
       "tools_used": [
         "search_documents"
       ],
@@ -108,7 +108,7 @@
       "token_precision": 0.0857,
       "token_recall": 0.2,
       "token_f1": 0.12,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
@@ -129,10 +129,10 @@
       "token_precision": 0.2812,
       "token_recall": 0.75,
       "token_f1": 0.4091,
-      "latency_s": 0.007,
+      "latency_s": 0.009,
       "tools_used": [
-        "calculator",
-        "search_documents"
+        "search_documents",
+        "calculator"
       ],
       "sources": [
         "[Source: product_documentation.pdf, page 1]"
@@ -151,10 +151,10 @@
       "token_precision": 0.0,
       "token_recall": 0.0,
       "token_f1": 0.0,
-      "latency_s": 0.009,
+      "latency_s": 0.01,
       "tools_used": [
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
         "[Source: customer_support_policy.pdf, page 1]"
@@ -173,7 +173,7 @@
       "token_precision": 0.0303,
       "token_recall": 0.0714,
       "token_f1": 0.0426,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [
         "search_documents"
       ],
@@ -194,11 +194,11 @@
       "token_precision": 0.2593,
       "token_recall": 0.5385,
       "token_f1": 0.35,
-      "latency_s": 0.008,
+      "latency_s": 0.01,
       "tools_used": [
-        "calculator",
+        "customer_order_lookup",
         "search_documents",
-        "customer_order_lookup"
+        "calculator"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
@@ -217,7 +217,7 @@
       "token_precision": 0.35,
       "token_recall": 0.7,
       "token_f1": 0.4667,
-      "latency_s": 0.006,
+      "latency_s": 0.008,
       "tools_used": [
         "customer_order_lookup"
       ],
@@ -236,7 +236,7 @@
       "token_precision": 0.25,
       "token_recall": 0.4375,
       "token_f1": 0.3182,
-      "latency_s": 0.009,
+      "latency_s": 0.011,
       "tools_used": [
         "query_database"
       ],
@@ -255,7 +255,7 @@
       "token_precision": 0.1923,
       "token_recall": 0.4545,
       "token_f1": 0.2703,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [
         "calculator",
         "query_database"
@@ -294,11 +294,11 @@
       "token_precision": 0.2031,
       "token_recall": 0.7222,
       "token_f1": 0.3171,
-      "latency_s": 0.009,
+      "latency_s": 0.01,
       "tools_used": [
-        "calculator",
-        "search_documents",
         "customer_order_lookup",
+        "search_documents",
+        "calculator",
         "generate_report"
       ],
       "sources": [
@@ -318,7 +318,7 @@
       "token_precision": 0.2,
       "token_recall": 0.3333,
       "token_f1": 0.25,
-      "latency_s": 0.007,
+      "latency_s": 0.009,
       "tools_used": [
         "calculator",
         "query_database"
@@ -340,8 +340,8 @@
       "token_f1": 0.1081,
       "latency_s": 0.008,
       "tools_used": [
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
@@ -417,7 +417,7 @@
       "token_precision": 1.0,
       "token_recall": 1.0,
       "token_f1": 1.0,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "customer_order_lookup"
       ],

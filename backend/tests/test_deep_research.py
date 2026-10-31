@@ -47,3 +47,4 @@ def test_deep_research_validation_empty_topic():
     result = tool_registry.execute_tool("deep_research", {"topic": "   "})
     assert result["success"] is False
     assert "Parameter 'topic' must be a non-empty string" in result["error"]
+

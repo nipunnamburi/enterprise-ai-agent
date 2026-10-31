@@ -52,3 +52,4 @@ def test_mcp_unknown_tool_error():
     res = client.call_tool("non_existent_tool", {})
     assert res["success"] is False
     assert "not found" in res["error"].lower()
+

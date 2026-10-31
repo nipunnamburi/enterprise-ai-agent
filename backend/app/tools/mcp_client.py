@@ -245,3 +245,4 @@ class MCPClient:
             self._registered_adapters[adapter.name] = adapter
             registered.append(adapter.name)
         return registered
+
