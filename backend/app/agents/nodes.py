@@ -343,6 +343,7 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
     calc_data = None
     sales_data = None
     customer_data = None
+    research_data = None
     
     for tr in tool_results:
         tname = tr.get("tool_name")
@@ -356,8 +357,17 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
                 sales_data = res
             elif res.get("entity") == "customers" and res.get("data"):
                 customer_data = res.get("data", [])[0]
+        elif tname == "deep_research":
+            research_data = res
 
-    if "calculate" in task_text.lower() and calc_data is not None and "complaint" not in task_text.lower():
+    if research_data and research_data.get("dossier"):
+        answer = research_data.get("dossier")
+        for src in research_data.get("sources_consulted", []):
+            citation_str = f"[Source: {src.get('title')}]({src.get('url')})"
+            if citation_str not in sources:
+                sources.append(citation_str)
+
+    elif "calculate" in task_text.lower() and calc_data is not None and "complaint" not in task_text.lower():
         answer = (
             f"### Deterministic Calculation Result\n\n"
             f"- **Requested Calculation:** {task_text}\n"

@@ -188,3 +188,14 @@ export async function executeToolDirect(tool_name: string, args: Record<string, 
   if (!res.ok) throw new Error("Tool execution failed");
   return res.json();
 }
+
+export async function executeDeepResearch(topic: string, depth: number = 2, focus_areas?: string[]) {
+  const headers = await authHeaders({ "Content-Type": "application/json" });
+  const res = await fetch(`${API_BASE}/agent/research`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ topic, depth, focus_areas }),
+  });
+  if (!res.ok) throw new Error("Deep research request failed");
+  return res.json();
+}

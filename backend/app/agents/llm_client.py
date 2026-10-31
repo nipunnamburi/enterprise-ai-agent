@@ -75,11 +75,15 @@ class LLMClient:
             needs_sales = any(w in prompt_lower for w in ["sales", "revenue", "target", "quarter", "q1", "q2", "q3", "q4", "product catalog", "customer database", "cust-1001", "customer code"])
             needs_calc = any(w in prompt_lower for w in ["calculate", "percentage difference", "growth rate", "% difference", "percentage"])
             needs_web = any(w in prompt_lower for w in ["market benchmark", "competitor intelligence", "web search"])
+            needs_deep_research = any(w in prompt_lower for w in ["deep research", "recursive research", "in-depth research", "research report", "multi-hop", "market synthesis", "synthesize research", "industry dossier", "deep dive"])
             needs_report = any(w in prompt_lower for w in ["prepare a response", "generate report", "audit report", "formal response"])
 
             if needs_policy:
                 required_tools.append("search_documents")
                 steps.append("Search knowledge base for relevant policy clauses")
+            if needs_deep_research:
+                required_tools.append("deep_research")
+                steps.append("Execute recursive multi-hop deep research and synthesize verified dossier")
             if needs_order:
                 if "customer code" in prompt_lower:
                     required_tools.append("query_database")
@@ -229,6 +233,15 @@ class LLMClient:
                         "recommendation": "Execute standard resolution workflow according to policy guidelines."
                     },
                     reason="Compile executive report artifact."
+                )
+
+            # 7. deep_research
+            elif target_tool == "deep_research" or (not target_tool and "deep_research" in user_prompt):
+                clean_topic = user_prompt.replace("deep_research", "").strip() or user_prompt[:80]
+                return ToolDecision(
+                    tool_name="deep_research",
+                    arguments={"topic": clean_topic, "depth": 2},
+                    reason="Execute multi-hop recursive research to synthesize verified claims and citations."
                 )
 
             return ToolDecision(

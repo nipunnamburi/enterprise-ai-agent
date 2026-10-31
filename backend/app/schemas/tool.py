@@ -57,6 +57,11 @@ class SearchDocumentsArgs(BaseModel):
     query: str = Field(..., description="Natural language search query for document vector retrieval")
     top_k: int = Field(default=3, ge=1, le=10, description="Number of document chunks to retrieve")
 
+class DeepResearchArgs(BaseModel):
+    topic: str = Field(..., description="The central enterprise research subject or complex query")
+    depth: int = Field(default=2, ge=1, le=3, description="Recursive traversal depth (1 to 3)")
+    focus_areas: Optional[List[str]] = Field(default=None, description="Optional domain focus areas")
+
 TOOL_ARGUMENT_SCHEMAS: Dict[str, Type[BaseModel]] = {
     "calculator": CalculatorArgs,
     "customer_order_lookup": CustomerOrderLookupArgs,
@@ -64,4 +69,5 @@ TOOL_ARGUMENT_SCHEMAS: Dict[str, Type[BaseModel]] = {
     "web_search": WebSearchArgs,
     "generate_report": GenerateReportArgs,
     "search_documents": SearchDocumentsArgs,
+    "deep_research": DeepResearchArgs,
 }

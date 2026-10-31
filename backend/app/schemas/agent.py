@@ -49,6 +49,21 @@ class AgentChatResponse(BaseModel):
     plan: Optional[AgentPlan] = None
     duration_ms: float
 
+class AgentResearchRequest(BaseModel):
+    topic: str = Field(..., description="The comprehensive research inquiry or subject")
+    depth: int = Field(default=2, ge=1, le=3, description="Recursive traversal depth (1-3)")
+    focus_areas: Optional[List[str]] = Field(default=None, description="Optional domain focus areas")
+
+class AgentResearchResponse(BaseModel):
+    success: bool
+    topic: str
+    depth: int
+    total_hops: int
+    sources_consulted: List[Dict[str, str]]
+    claims: List[Dict[str, Any]]
+    dossier: str
+    summary: str
+
 class AgentJobSubmitRequest(BaseModel):
     objective: str = Field(description="The autonomous research or execution objective")
     conversation_id: Optional[str] = None

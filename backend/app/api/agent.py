@@ -16,7 +16,9 @@ from app.schemas.agent import (
     ExecutionStepInfo,
     AgentPlan,
     AgentJobSubmitRequest,
-    AgentJobResponse
+    AgentJobResponse,
+    AgentResearchRequest,
+    AgentResearchResponse
 )
 from app.agents.graph import agent_graph
 from app.agents.context_manager import context_manager, RollingContextLedger
@@ -247,6 +249,26 @@ def get_task_steps(task_id: str, db: Session = Depends(get_db)):
         "details": s.input_data,
         "created_at": s.created_at
     } for s in steps]
+
+
+@router.post("/research", response_model=AgentResearchResponse)
+def execute_direct_deep_research(
+    request: AgentResearchRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Direct synchronous endpoint for multi-hop deep web research and claim synthesis (open-ai-research-agent pattern).
+    Decomposes the topic, traverses iterative search hops, extracts verified claims with citations,
+    and returns a synthesized executive dossier.
+    """
+    res = tool_registry.execute_tool("deep_research", {
+        "topic": request.topic,
+        "depth": request.depth,
+        "focus_areas": request.focus_areas
+    })
+    if not res.get("success"):
+        raise HTTPException(status_code=400, detail=res.get("error", "Deep research failed"))
+    return res
 
 
 # Background Autonomous Job Execution Ledger & Registry (auto-deep-researcher-24x7)

@@ -33,6 +33,8 @@ export default function ToolsPage() {
       setToolArgsJson('{\n  "query": "enterprise saas sla standards",\n  "num_results": 3\n}');
     } else if (toolName === "generate_report") {
       setToolArgsJson('{\n  "title": "Customer Refund Audit",\n  "summary": "Order 1024 eligible for full refund",\n  "recommendation": "Approve refund"\n}');
+    } else if (toolName === "deep_research") {
+      setToolArgsJson('{\n  "topic": "Enterprise SaaS uptime SLA standards and penalty benchmarks",\n  "depth": 2\n}');
     }
   };
 
