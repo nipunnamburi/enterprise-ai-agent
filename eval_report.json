@@ -1,16 +1,16 @@
 {
   "benchmark_title": "Enterprise AI Agent Multi-Metric Quality Evaluation",
   "total_test_cases": 20,
-  "overall_pass_rate_pct": 75.0,
+  "overall_pass_rate_pct": 80.0,
   "metrics": {
     "rag_retrieval_accuracy_pct": 100.0,
     "tool_selection_accuracy_pct": 100.0,
-    "numerical_accuracy_pct": 68.8,
-    "mean_semantic_similarity": 0.341,
-    "mean_token_f1_score": 0.323,
-    "average_latency_seconds": 0.008
+    "numerical_accuracy_pct": 75.0,
+    "mean_semantic_similarity": 0.369,
+    "mean_token_f1_score": 0.29,
+    "average_latency_seconds": 0.009
   },
-  "timestamp": "2026-10-31 17:49:55 UTC",
+  "timestamp": "2026-10-31 18:02:51 UTC",
   "test_results": [
     {
       "id": 1,
@@ -20,10 +20,10 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.1248,
-      "token_precision": 0.1023,
-      "token_recall": 0.6,
-      "token_f1": 0.1748,
+      "semantic_similarity": 0.1995,
+      "token_precision": 0.051,
+      "token_recall": 0.6667,
+      "token_f1": 0.0948,
       "latency_s": 0.029,
       "tools_used": [
         "search_documents"
@@ -31,7 +31,7 @@
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Summary of Policy\n- in transit, or fails within thirty (30) days of delivery, the 15% restocking fee is strictly waived The customer is entitled to a one hu..."
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: refund_policy.pdf, page 1]:**\nin transit, or fails within thirty (30) days of delivery, the 15% restocking ..."
     },
     {
       "id": 2,
@@ -41,18 +41,18 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.4612,
-      "token_precision": 0.0795,
-      "token_recall": 0.5833,
-      "token_f1": 0.14,
-      "latency_s": 0.008,
+      "semantic_similarity": 0.548,
+      "token_precision": 0.0459,
+      "token_recall": 0.75,
+      "token_f1": 0.0865,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Summary of Policy\n- d order number (e.g., ORD-1024 or 1024) and proof of purchase are required for all return processing Section 2: Restocking Fees & Condit..."
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: refund_policy.pdf, page 1]:**\nd order number (e.g., ORD-1024 or 1024) and proof of purchase are required fo..."
     },
     {
       "id": 3,
@@ -62,18 +62,18 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.4528,
-      "token_precision": 0.0674,
-      "token_recall": 0.4615,
-      "token_f1": 0.1176,
-      "latency_s": 0.007,
+      "semantic_similarity": 0.5579,
+      "token_precision": 0.0421,
+      "token_recall": 0.6923,
+      "token_f1": 0.0793,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Summary of Policy\n- d order number (e.g., ORD-1024 or 1024) and proof of purchase are required for all return processing Section 2: Restocking Fees & Condit..."
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: refund_policy.pdf, page 1]:**\nd order number (e.g., ORD-1024 or 1024) and proof of purchase are required fo..."
     },
     {
       "id": 4,
@@ -83,31 +83,10 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.6702,
-      "token_precision": 0.3714,
+      "semantic_similarity": 0.4027,
+      "token_precision": 0.1733,
       "token_recall": 0.8667,
-      "token_f1": 0.52,
-      "latency_s": 0.007,
-      "tools_used": [
-        "search_documents"
-      ],
-      "sources": [
-        "[Source: employee_handbook.pdf, page 1]"
-      ],
-      "generated_answer_snippet": "### Summary of Policy\n- Enterprise Global Employee Handbook & Guidelines Section 4: Paid Time Off (PTO) & Leave Full-time employees receive 20 days of paid time..."
-    },
-    {
-      "id": 5,
-      "category": "RAG",
-      "question": "What is the remote work home office stipend and monthly internet reimbursement in the handbook?",
-      "overall_passed": false,
-      "tool_selection_passed": true,
-      "retrieval_passed": true,
-      "numerical_passed": false,
-      "semantic_similarity": 0.1873,
-      "token_precision": 0.0857,
-      "token_recall": 0.2,
-      "token_f1": 0.12,
+      "token_f1": 0.2889,
       "latency_s": 0.006,
       "tools_used": [
         "search_documents"
@@ -115,7 +94,28 @@
       "sources": [
         "[Source: employee_handbook.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Summary of Policy\n- Enterprise Global Employee Handbook & Guidelines Section 4: Paid Time Off (PTO) & Leave Full-time employees receive 20 days of paid time..."
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: employee_handbook.pdf, page 1]:**\nEnterprise Global Employee Handbook & Guidelines Section 4: Paid Time Off..."
+    },
+    {
+      "id": 5,
+      "category": "RAG",
+      "question": "What is the remote work home office stipend and monthly internet reimbursement in the handbook?",
+      "overall_passed": true,
+      "tool_selection_passed": true,
+      "retrieval_passed": true,
+      "numerical_passed": true,
+      "semantic_similarity": 0.5666,
+      "token_precision": 0.1733,
+      "token_recall": 0.8667,
+      "token_f1": 0.2889,
+      "latency_s": 0.006,
+      "tools_used": [
+        "search_documents"
+      ],
+      "sources": [
+        "[Source: employee_handbook.pdf, page 1]"
+      ],
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: employee_handbook.pdf, page 1]:**\nEnterprise Global Employee Handbook & Guidelines Section 4: Paid Time Off..."
     },
     {
       "id": 6,
@@ -125,10 +125,10 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.4081,
-      "token_precision": 0.2812,
+      "semantic_similarity": 0.3072,
+      "token_precision": 0.1071,
       "token_recall": 0.75,
-      "token_f1": 0.4091,
+      "token_f1": 0.1875,
       "latency_s": 0.007,
       "tools_used": [
         "calculator",
@@ -137,7 +137,7 @@
       "sources": [
         "[Source: product_documentation.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Summary of Policy\n- Enterprise Cloud Suite - Technical Architecture & SLAs Section 1: Service Level Agreement (SLA) Enterprise Cloud Suite guarantees 99.95%..."
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: product_documentation.pdf, page 1]:**\nEnterprise Cloud Suite - Technical Architecture & SLAs Section 1: Ser..."
     },
     {
       "id": 7,
@@ -147,40 +147,40 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": false,
-      "semantic_similarity": 0.0014,
+      "semantic_similarity": 0.0,
       "token_precision": 0.0,
       "token_recall": 0.0,
       "token_f1": 0.0,
-      "latency_s": 0.008,
+      "latency_s": 0.009,
       "tools_used": [
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
         "[Source: customer_support_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** 2026-09-12T02:36:11.750936 (49 days elapsed)\n- **Items:**..."
+      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** None (None days elapsed)\n- **Items:** AI Gateway Applianc..."
     },
     {
       "id": 8,
       "category": "RAG",
       "question": "What is the maximum discretionary goodwill credit a customer success manager can issue?",
-      "overall_passed": false,
+      "overall_passed": true,
       "tool_selection_passed": true,
       "retrieval_passed": true,
-      "numerical_passed": false,
-      "semantic_similarity": 0.2857,
-      "token_precision": 0.0303,
-      "token_recall": 0.0714,
-      "token_f1": 0.0426,
-      "latency_s": 0.006,
+      "numerical_passed": true,
+      "semantic_similarity": 0.5058,
+      "token_precision": 0.125,
+      "token_recall": 0.6429,
+      "token_f1": 0.2093,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
         "[Source: customer_support_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Summary of Policy\n- Customer Support Escalation & Compensation Policy Section 1: Ticket Priority Response Windows Urgent tickets must receive a technical en..."
+      "generated_answer_snippet": "### Knowledge Base Analysis\n\n**According to [Source: customer_support_policy.pdf, page 1]:**\nCustomer Support Escalation & Compensation Policy Section 1: Ticket..."
     },
     {
       "id": 9,
@@ -197,8 +197,8 @@
       "latency_s": 0.008,
       "tools_used": [
         "calculator",
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
@@ -214,34 +214,34 @@
       "retrieval_passed": true,
       "numerical_passed": true,
       "semantic_similarity": 0.0,
-      "token_precision": 0.2917,
+      "token_precision": 0.35,
       "token_recall": 0.7,
-      "token_f1": 0.4118,
-      "latency_s": 0.007,
+      "token_f1": 0.4667,
+      "latency_s": 0.006,
       "tools_used": [
         "customer_order_lookup"
       ],
       "sources": [],
-      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** 2026-09-12T02:36:11.750936 (49 days elapsed)\n- **Items:**..."
+      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** None (None days elapsed)\n- **Items:** AI Gateway Applianc..."
     },
     {
       "id": 11,
       "category": "Tool_Calling",
       "question": "Query the total actual sales revenue vs target revenue for Q3 2024.",
-      "overall_passed": true,
+      "overall_passed": false,
       "tool_selection_passed": true,
       "retrieval_passed": true,
-      "numerical_passed": true,
-      "semantic_similarity": 0.1121,
-      "token_precision": 0.3846,
-      "token_recall": 0.625,
-      "token_f1": 0.4762,
+      "numerical_passed": false,
+      "semantic_similarity": 0.0771,
+      "token_precision": 0.1333,
+      "token_recall": 0.5,
+      "token_f1": 0.2105,
       "latency_s": 0.009,
       "tools_used": [
         "query_database"
       ],
       "sources": [],
-      "generated_answer_snippet": "### Q3 Sales Performance Analysis\n- **Actual Q3 Revenue:** $957,500.00\n- **Target Q3 Revenue:** $910,000.00\n- **Difference:** +$47,500.00 (+5.22% over target)\n-..."
+      "generated_answer_snippet": "### Enterprise Sales Performance Analysis - Q3\n\n**1. Database Query Findings:**\n- **Actual Revenue Recorded:** $1,250,000.00 USD\n- **Target Revenue:** $1,200,00..."
     },
     {
       "id": 12,
@@ -255,10 +255,10 @@
       "token_precision": 0.1923,
       "token_recall": 0.4545,
       "token_f1": 0.2703,
-      "latency_s": 0.008,
+      "latency_s": 0.006,
       "tools_used": [
-        "query_database",
-        "calculator"
+        "calculator",
+        "query_database"
       ],
       "sources": [],
       "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Calculate the percentage difference between actual sales of 720000 and target of 650000.\n- **..."
@@ -271,7 +271,7 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.2863,
+      "semantic_similarity": 0.2978,
       "token_precision": 0.3684,
       "token_recall": 0.5833,
       "token_f1": 0.4516,
@@ -290,21 +290,21 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": true,
-      "semantic_similarity": 0.4886,
-      "token_precision": 0.2031,
+      "semantic_similarity": 0.5933,
+      "token_precision": 0.1092,
       "token_recall": 0.7222,
-      "token_f1": 0.3171,
+      "token_f1": 0.1898,
       "latency_s": 0.008,
       "tools_used": [
-        "generate_report",
+        "customer_order_lookup",
         "calculator",
-        "search_documents",
-        "customer_order_lookup"
+        "generate_report",
+        "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Refund Eligibility Summary for Order #1024\n- **Eligibility Status:** Eligible for 100% full refund.\n- **Delivery Window:** Delivered 49 calendar days ago (w..."
+      "generated_answer_snippet": "### Customer Complaint & Refund Eligibility Assessment\n\n**1. Customer & Order Verification:**\nOrder **#1024** was delivered None days ago (Total value: $2,499.0..."
     },
     {
       "id": 15,
@@ -314,14 +314,14 @@
       "tool_selection_passed": true,
       "retrieval_passed": true,
       "numerical_passed": false,
-      "semantic_similarity": 0.2495,
-      "token_precision": 0.2333,
-      "token_recall": 0.3889,
-      "token_f1": 0.2917,
-      "latency_s": 0.006,
+      "semantic_similarity": 0.2306,
+      "token_precision": 0.2,
+      "token_recall": 0.3333,
+      "token_f1": 0.25,
+      "latency_s": 0.007,
       "tools_used": [
-        "query_database",
-        "calculator"
+        "calculator",
+        "query_database"
       ],
       "sources": [],
       "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Compare Q3 sales against our target, query the database, calculate the percentage difference,..."
@@ -335,18 +335,18 @@
       "retrieval_passed": true,
       "numerical_passed": true,
       "semantic_similarity": 0.0,
-      "token_precision": 0.0833,
+      "token_precision": 0.1,
       "token_recall": 0.1176,
-      "token_f1": 0.0976,
-      "latency_s": 0.007,
+      "token_f1": 0.1081,
+      "latency_s": 0.017,
       "tools_used": [
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
       ],
-      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** 2026-09-12T02:36:11.750936 (49 days elapsed)\n- **Items:**..."
+      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** None (None days elapsed)\n- **Items:** AI Gateway Applianc..."
     },
     {
       "id": 17,
@@ -360,7 +360,7 @@
       "token_precision": 0.3333,
       "token_recall": 0.75,
       "token_f1": 0.4615,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [],
       "sources": [],
       "generated_answer_snippet": "I have recorded your preference: **My preferred response style is concise bullet points.**. I will apply this formatting style to all future responses and summa..."
@@ -377,7 +377,7 @@
       "token_precision": 0.1798,
       "token_recall": 0.7619,
       "token_f1": 0.2909,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
