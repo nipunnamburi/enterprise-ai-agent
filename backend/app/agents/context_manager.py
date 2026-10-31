@@ -1,8 +1,55 @@
 from typing import List, Dict, Any, Optional
 
+class RollingContextLedger:
+    """
+    Bounded rolling context ledger inspired by auto-deep-researcher-24x7.
+    Incrementally archives verified facts, discovered entities, and intermediate conclusions.
+    Prevents token context explosion during continuous, long-running, or multi-turn agent execution.
+    """
+    def __init__(self, max_entries: int = 40):
+        self.max_entries = max_entries
+        self.entries: List[Dict[str, Any]] = []
+
+    def record_entry(self, category: str, statement: str, source: Optional[str] = None) -> Dict[str, Any]:
+        """Appends a validated finding to the rolling ledger, pruning oldest entries if exceeding capacity."""
+        clean_statement = statement.strip()
+        if not clean_statement:
+            return {}
+        
+        entry = {
+            "category": category,
+            "statement": clean_statement,
+            "source": source or "Agent Reasoning"
+        }
+        self.entries.append(entry)
+        if len(self.entries) > self.max_entries:
+            self.entries.pop(0)
+        return entry
+
+    def get_entries(self) -> List[Dict[str, Any]]:
+        return list(self.entries)
+
+    def format_ledger_for_prompt(self) -> str:
+        """Serializes current ledger knowledge into a high-density prompt section."""
+        if not self.entries:
+            return "No verified ledger entries."
+        lines = []
+        for e in self.entries:
+            src_str = f" [Source: {e['source']}]" if e.get("source") else ""
+            lines.append(f"- [{e['category'].upper()}] {e['statement']}{src_str}")
+        return "\n".join(lines)
+
+    def prune_messages(self, messages: List[Dict[str, Any]], max_turns: int = 6) -> List[Dict[str, Any]]:
+        """Bounds conversation history to the most recent turns."""
+        if len(messages) <= max_turns:
+            return messages
+        return messages[-max_turns:]
+
+
 class ContextManager:
     def __init__(self, max_history_turns: int = 6):
         self.max_history_turns = max_history_turns
+        self.global_ledger = RollingContextLedger()
 
     def build_agent_context(
         self,
@@ -12,19 +59,23 @@ class ContextManager:
         retrieved_documents: List[Dict[str, Any]],
         tool_results: List[Dict[str, Any]],
         plan: Optional[Dict[str, Any]] = None,
-        compressed_summary: Optional[str] = None
+        compressed_summary: Optional[str] = None,
+        ledger: Optional[RollingContextLedger] = None
     ) -> Dict[str, Any]:
         """
         Constructs a sanitized, budgeted, and structured context payload for LLM reasoning.
         Enforces security boundaries against prompt injection from untrusted external documents.
+        Incorporates the Rolling Context Ledger for long-horizon stability.
         """
+        active_ledger = ledger or self.global_ledger
+
         # 1. Budget and summarize conversation history
         history_context = []
         if compressed_summary:
             history_context.append(f"[Previous Conversation Summary]: {compressed_summary}")
 
-        # Keep only recent turns
-        recent_messages = messages[-self.max_history_turns:] if len(messages) > self.max_history_turns else messages
+        # Keep only recent turns using rolling pruning
+        recent_messages = active_ledger.prune_messages(messages, max_turns=self.max_history_turns)
         for msg in recent_messages:
             role = msg.get("role", "user")
             content = msg.get("content", "")
@@ -71,7 +122,8 @@ class ContextManager:
             "current_objective": current_task,
             "active_plan": plan,
             "untrusted_documents": "\n\n".join(untrusted_knowledge) if untrusted_knowledge else "No documents retrieved.",
-            "tool_evidence": "\n\n".join(verified_tools) if verified_tools else "No tool results yet."
+            "tool_evidence": "\n\n".join(verified_tools) if verified_tools else "No tool results yet.",
+            "verified_ledger": active_ledger.format_ledger_for_prompt()
         }
 
     @staticmethod

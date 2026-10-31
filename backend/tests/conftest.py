@@ -82,3 +82,9 @@ def setup_database_schema_and_seed():
 
     db.close()
     yield
+
+@pytest.fixture(scope="session")
+def client():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    return TestClient(app)

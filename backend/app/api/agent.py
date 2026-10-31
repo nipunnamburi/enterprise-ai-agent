@@ -1,18 +1,26 @@
 import uuid
 import time
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
-from app.core.database import get_db
+from app.core.database import get_db, SessionLocal
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.models.conversation import Conversation, Message
 from app.models.task import Task, TaskStep, ToolExecution
 from app.models.memory import Memory
-from app.schemas.agent import AgentChatRequest, AgentChatResponse, ExecutionStepInfo, AgentPlan
+from app.schemas.agent import (
+    AgentChatRequest,
+    AgentChatResponse,
+    ExecutionStepInfo,
+    AgentPlan,
+    AgentJobSubmitRequest,
+    AgentJobResponse
+)
 from app.agents.graph import agent_graph
-from app.agents.context_manager import context_manager
+from app.agents.context_manager import context_manager, RollingContextLedger
+from app.tools.registry import tool_registry
 
 router = APIRouter(prefix="/agent", tags=["Agent Workflows"])
 
@@ -239,3 +247,112 @@ def get_task_steps(task_id: str, db: Session = Depends(get_db)):
         "details": s.input_data,
         "created_at": s.created_at
     } for s in steps]
+
+
+# Background Autonomous Job Execution Ledger & Registry (auto-deep-researcher-24x7)
+_JOBS_STORE: Dict[str, Dict[str, Any]] = {}
+
+def _run_background_agent_job(job_id: str, objective: str, user_id: str, depth: int):
+    job = _JOBS_STORE.get(job_id)
+    if not job or job.get("status") == "cancelled":
+        return
+
+    job["status"] = "running"
+    job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Worker picked up job {job_id}")
+
+    try:
+        job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Decomposing and executing deep research (depth={depth})...")
+        
+        # Execute deep research synthesizer tool
+        research_result = tool_registry.execute_tool("deep_research", {
+            "topic": objective,
+            "depth": depth
+        })
+
+        if not research_result.get("success"):
+            job["status"] = "failed"
+            job["error"] = research_result.get("error", "Unknown research failure")
+            job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Research execution failed: {job['error']}")
+            return
+
+        # Record verified findings into rolling context ledger
+        claims = research_result.get("claims", [])
+        for c in claims[:10]:
+            context_manager.global_ledger.record_entry(
+                category="verified_research",
+                statement=c.get("claim", ""),
+                source=c.get("source_title", "External Web")
+            )
+        job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Archived {min(10, len(claims))} verified claims into rolling ledger.")
+
+        job["status"] = "completed"
+        job["completed_at"] = datetime.now(timezone.utc).isoformat()
+        job["result"] = {
+            "summary": research_result.get("summary"),
+            "dossier": research_result.get("dossier"),
+            "claims_count": len(claims),
+            "sources": research_result.get("sources_consulted", [])
+        }
+        job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Job {job_id} successfully finished.")
+
+    except Exception as e:
+        job["status"] = "failed"
+        job["error"] = str(e)
+        job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Exception encountered: {str(e)}")
+
+@router.post("/jobs", response_model=AgentJobResponse)
+def submit_agent_job(
+    request: AgentJobSubmitRequest,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    job_id = f"job-{uuid.uuid4().hex[:10]}"
+    job_record = {
+        "job_id": job_id,
+        "user_id": current_user.id,
+        "objective": request.objective,
+        "status": "queued",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "completed_at": None,
+        "result": None,
+        "error": None,
+        "logs": [f"[{datetime.now(timezone.utc).isoformat()}] Autonomous job submitted with priority '{request.priority}'."]
+    }
+    _JOBS_STORE[job_id] = job_record
+    background_tasks.add_task(_run_background_agent_job, job_id, request.objective, current_user.id, request.depth)
+    return job_record
+
+@router.get("/jobs/{job_id}", response_model=AgentJobResponse)
+def get_agent_job_status(
+    job_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    job = _JOBS_STORE.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail=f"Job '{job_id}' not found")
+    if job.get("user_id") != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Access to job denied")
+    return job
+
+@router.get("/jobs", response_model=List[AgentJobResponse])
+def list_agent_jobs(current_user: User = Depends(get_current_user)):
+    user_jobs = [
+        job for job in _JOBS_STORE.values()
+        if job.get("user_id") == current_user.id or current_user.role == "admin"
+    ]
+    return sorted(user_jobs, key=lambda x: x["created_at"], reverse=True)
+
+@router.post("/jobs/{job_id}/cancel")
+def cancel_agent_job(
+    job_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    job = _JOBS_STORE.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail=f"Job '{job_id}' not found")
+    if job.get("user_id") != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Access to job denied")
+    job["status"] = "cancelled"
+    job["logs"].append(f"[{datetime.now(timezone.utc).isoformat()}] Job cancelled by user.")
+    return {"message": f"Job {job_id} cancelled", "status": "cancelled"}
+

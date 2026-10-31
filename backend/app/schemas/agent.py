@@ -48,3 +48,19 @@ class AgentChatResponse(BaseModel):
     execution_steps: List[ExecutionStepInfo]
     plan: Optional[AgentPlan] = None
     duration_ms: float
+
+class AgentJobSubmitRequest(BaseModel):
+    objective: str = Field(description="The autonomous research or execution objective")
+    conversation_id: Optional[str] = None
+    depth: int = Field(default=2, description="Research or search depth (1-3)")
+    priority: str = Field(default="normal", description="Priority level: low, normal, high")
+
+class AgentJobResponse(BaseModel):
+    job_id: str
+    objective: str
+    status: str
+    created_at: str
+    completed_at: Optional[str] = None
+    result: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    logs: List[str] = Field(default_factory=list)
