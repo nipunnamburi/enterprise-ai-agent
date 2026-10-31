@@ -112,71 +112,120 @@ class LLMClient:
             )
 
         elif schema == ToolDecision:
+            # 1. search_documents
             if "search_documents" in user_prompt:
+                # Extract clean query
+                q_match = re.search(r"user_objective[\"']?:\s*[\"']([^\"']+)[\"']", user_prompt)
+                search_query = q_match.group(1)[:100] if q_match else user_prompt[:80]
                 return ToolDecision(
                     tool_name="search_documents",
-                    arguments={"query": user_prompt[:80], "top_k": 3},
-                    reason="Retrieve authoritative policy documentation from Chroma."
+                    arguments={"query": search_query, "top_k": 3},
+                    reason="Retrieve authoritative policy documentation from Chroma vector database."
                 )
 
+            # 2. customer_order_lookup
             elif "customer_order_lookup" in user_prompt:
-                order_num = "1024"
-                m = re.search(r"(?:order|ord|#)\s*([0-9]{3,6})", prompt_lower)
+                order_num = None
+                m = re.search(r"(?:order|ord|#)\s*([0-9]{3,7})", prompt_lower)
                 if m:
                     order_num = m.group(1)
+                else:
+                    # Look for any isolated 4-digit number
+                    any_num = re.search(r"\b([0-9]{4,6})\b", user_prompt)
+                    order_num = any_num.group(1) if any_num else "1024"
                 return ToolDecision(
                     tool_name="customer_order_lookup",
-                    arguments={"order_number": order_num},
-                    reason=f"Look up comprehensive details for Order #{order_num}."
+                    arguments={"order_number": str(order_num)},
+                    reason=f"Look up comprehensive order history, item list, and return status for Order #{order_num}."
                 )
 
+            # 3. query_database
             elif "query_database" in user_prompt:
-                if "cust-" in prompt_lower or "customer code" in prompt_lower:
-                    m = re.search(r"(cust-[0-9]{3,5})", prompt_lower)
+                if "cust-" in prompt_lower or "customer" in prompt_lower:
+                    m = re.search(r"(cust-[0-9]{3,6})", prompt_lower)
                     code = m.group(1).upper() if m else "CUST-1001"
                     return ToolDecision(
                         tool_name="query_database",
                         arguments={"entity": "customers", "filters": {"customer_code": code}},
-                        reason=f"Query database for customer {code}."
+                        reason=f"Query database records for customer profile {code}."
                     )
-                elif "sales" in prompt_lower or "q3" in prompt_lower:
+                elif "sales" in prompt_lower or "revenue" in prompt_lower or "quarter" in prompt_lower or "q1" in prompt_lower or "q2" in prompt_lower or "q3" in prompt_lower or "q4" in prompt_lower:
+                    q_match = re.search(r"\b(q[1-4])\b", prompt_lower)
+                    quarter_val = q_match.group(1).upper() if q_match else "Q3"
+                    y_match = re.search(r"\b(20[2-3][0-9])\b", prompt_lower)
+                    year_val = int(y_match.group(1)) if y_match else 2024
                     return ToolDecision(
                         tool_name="query_database",
-                        arguments={"entity": "sales", "filters": {"quarter": "Q3", "year": 2024}, "aggregation": "sum_revenue"},
-                        reason="Query Q3 2024 regional sales actuals and targets."
+                        arguments={"entity": "sales", "filters": {"quarter": quarter_val, "year": year_val}, "aggregation": "sum_revenue"},
+                        reason=f"Query regional sales actuals and revenue target for {quarter_val} {year_val}."
                     )
                 return ToolDecision(
                     tool_name="query_database",
                     arguments={"entity": "orders", "filters": {}, "limit": 5},
-                    reason="Query structured business records."
+                    reason="Query structured database records."
                 )
 
+            # 4. calculator
             elif "calculator" in prompt_lower or "calculator" in user_prompt:
-                expr = "2499.00 * 0.85"
-                if "percentage" in prompt_lower or "720000" in prompt_lower:
-                    expr = "((720000 - 650000) / 650000) * 100"
-                elif "15%" in prompt_lower and "2499" in prompt_lower:
-                    expr = "2499.00 * (1 - 0.15)"
+                expr = None
+                # Check for percentage difference between two numbers in prompt
+                two_nums = re.findall(r"\b(\d+(?:\.\d+)?)\b", user_prompt)
+                if ("percentage" in prompt_lower or "%" in prompt_lower or "growth" in prompt_lower) and len(two_nums) >= 2:
+                    # Filter out tool names, years, etc.
+                    float_candidates = [float(n) for n in two_nums if float(n) > 50 and float(n) != 2024]
+                    if len(float_candidates) >= 2:
+                        val1, val2 = float_candidates[0], float_candidates[1]
+                        expr = f"(({val1} - {val2}) / {val2}) * 100" if val2 != 0 else f"{val1} - {val2}"
+                
+                # Check for fee deduction or discount
+                if not expr and "%" in prompt_lower:
+                    pct_match = re.search(r"(\d+(?:\.\d+)?)\s*%", prompt_lower)
+                    amount_match = re.search(r"\$?\s*(\d+(?:,\d+)*(?:\.\d+)?)", user_prompt)
+                    if pct_match and amount_match:
+                        pct = float(pct_match.group(1)) / 100.0
+                        amt = amount_match.group(1).replace(",", "")
+                        expr = f"{amt} * (1 - {pct})" if "discount" in prompt_lower or "fee" in prompt_lower else f"{amt} * {pct}"
+
+                # Check prior tool output for total_amount
+                if not expr:
+                    amt_match = re.search(r"\"total_amount\":\s*(\d+(?:\.\d+)?)", user_prompt)
+                    if amt_match:
+                        tot = amt_match.group(1)
+                        expr = f"{tot} * 1.0" if "defective" in prompt_lower or "damaged" in prompt_lower else f"{tot} * 0.85"
+
+                if not expr:
+                    expr = "100.0 * 1.0"
+
                 return ToolDecision(
                     tool_name="calculator",
                     arguments={"expression": expr, "operation_type": "custom_expression"},
-                    reason="Compute exact numerical figure without LLM hallucination."
+                    reason=f"Calculate exact numerical figure dynamically: {expr}."
                 )
 
+            # 5. web_search
+            elif "web_search" in user_prompt:
+                query_text = user_prompt[:100]
+                return ToolDecision(
+                    tool_name="web_search",
+                    arguments={"query": query_text, "num_results": 3},
+                    reason="Execute web search to gather external industry information."
+                )
+
+            # 6. generate_report
             elif "generate_report" in user_prompt:
                 return ToolDecision(
                     tool_name="generate_report",
                     arguments={
                         "title": "Automated Agent Audit Report",
                         "summary": "Agent workflow executed successfully with all tool verifications completed.",
-                        "recommendation": "Approve action based on policy guidelines."
+                        "recommendation": "Execute standard resolution workflow according to policy guidelines."
                     },
                     reason="Compile executive report artifact."
                 )
 
             return ToolDecision(
                 tool_name="search_documents",
-                arguments={"query": user_prompt[:50]},
+                arguments={"query": user_prompt[:80], "top_k": 3},
                 reason="Default knowledge retrieval."
             )
 

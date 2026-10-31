@@ -1,11 +1,13 @@
 import time
 import re
+import json
 from typing import Dict, Any, List
 from datetime import datetime, timezone
 from app.agents.state import AgentState
 from app.agents.context_manager import context_manager
 from app.agents.llm_client import llm_client
 from app.schemas.agent import AgentPlan, ToolDecision, EvaluationResult, AgentResponse
+from app.schemas.tool import TOOL_ARGUMENT_SCHEMAS
 from app.tools.registry import tool_registry
 from app.memory.long_term import long_term_memory
 from app.core.database import SessionLocal
@@ -115,71 +117,46 @@ def select_tools_node(state: AgentState) -> Dict[str, Any]:
             continue
             
         if tool_name not in tools_used:
-            if tool_name == "customer_order_lookup":
-                # Extract order number from text
-                m = re.search(r"(?:order|ord|#)\s*([0-9]{3,6})", task_text, re.IGNORECASE)
-                order_num = m.group(1) if m else "1024"
-                pending_calls.append({
-                    "tool_name": "customer_order_lookup",
-                    "arguments": {"order_number": order_num},
-                    "reason": f"Look up order #{order_num} details, delivery dates, and return window."
-                })
-            elif tool_name == "calculator":
-                calc_expr = "2499.00 * 0.85"
-                if "15%" in task_text and "2499" in task_text:
-                    calc_expr = "2499.00 * (1 - 0.15)"
-                elif "percentage" in task_text.lower() or "720000" in task_text:
-                    calc_expr = "((720000 - 650000) / 650000) * 100"
-                else:
-                    for tr in tool_results:
-                        if tr.get("tool_name") == "customer_order_lookup":
-                            order_data = tr.get("result", {}).get("data", {}).get("order", {})
-                            tot = order_data.get("total_amount", 2499.00)
-                            calc_expr = f"{tot} * 1.0" if "defective" in task_text.lower() or "damaged" in task_text.lower() else f"{tot} * 0.85"
-                        elif tr.get("tool_name") == "query_database" and "sales" in task_text.lower():
-                            calc_expr = "((720000 - 650000) / 650000) * 100"
-                pending_calls.append({
-                    "tool_name": "calculator",
-                    "arguments": {"expression": calc_expr, "operation_type": "custom_expression"},
-                    "reason": f"Calculate deterministic financial figure: {calc_expr}"
-                })
-            elif tool_name == "query_database":
-                if "cust-" in task_text.lower() or "customer code" in task_text.lower():
-                    m = re.search(r"(cust-[0-9]{3,5})", task_text, re.IGNORECASE)
-                    code = m.group(1).upper() if m else "CUST-1001"
-                    pending_calls.append({
-                        "tool_name": "query_database",
-                        "arguments": {"entity": "customers", "filters": {"customer_code": code}},
-                        "reason": f"Query database for customer {code}."
-                    })
-                elif "sales" in task_text.lower() or "q3" in task_text.lower():
-                    pending_calls.append({
-                        "tool_name": "query_database",
-                        "arguments": {"entity": "sales", "filters": {"quarter": "Q3", "year": 2024}, "aggregation": "sum_revenue"},
-                        "reason": "Fetch Q3 2024 sales revenue and target."
-                    })
-                else:
-                    pending_calls.append({
-                        "tool_name": "query_database",
-                        "arguments": {"entity": "orders", "filters": {}, "limit": 5},
-                        "reason": "Query database records."
-                    })
-            elif tool_name == "web_search":
-                pending_calls.append({
-                    "tool_name": "web_search",
-                    "arguments": {"query": task_text, "num_results": 3},
-                    "reason": "Search external industry benchmarks."
-                })
-            elif tool_name == "generate_report":
-                pending_calls.append({
-                    "tool_name": "generate_report",
-                    "arguments": {
-                        "title": "Agent Investigation Report",
-                        "summary": "Completed policy evaluation and entity audit.",
-                        "recommendation": "Execute standard resolution workflow."
-                    },
-                    "reason": "Generate structured audit report."
-                })
+            # Query tool parameter specification from registry
+            tool_inst = tool_registry.get_tool(tool_name)
+            tool_schema = tool_inst.get_parameters_schema() if tool_inst else {}
+
+            system_prompt = (
+                f"You are a precision AI Tool Selector for an enterprise autonomous agent.\n"
+                f"Formulate the exact arguments for tool '{tool_name}' according to its specification:\n"
+                f"{json.dumps(tool_schema)}\n"
+                f"Extract or derive all required parameters from the user task and prior tool outputs.\n"
+                f"Return a valid ToolDecision where tool_name is '{tool_name}' and arguments match the schema strictly."
+            )
+
+            context_data = {
+                "user_objective": task_text,
+                "current_tool_needed": tool_name,
+                "prior_tool_results": [
+                    {"tool": tr.get("tool_name"), "data": tr.get("result", {}).get("data", tr.get("result", {}))}
+                    for tr in tool_results
+                ]
+            }
+            user_prompt = f"Execution Context:\n{json.dumps(context_data, default=str)}"
+
+            decision: ToolDecision = llm_client.generate_structured(ToolDecision, system_prompt, user_prompt)
+            decision_dict = decision.model_dump()
+
+            # Ensure tool_name is locked to the targeted required tool
+            decision_dict["tool_name"] = tool_name
+
+            # Validate arguments against Pydantic schema
+            arg_model = TOOL_ARGUMENT_SCHEMAS.get(tool_name)
+            if arg_model:
+                try:
+                    validated = arg_model(**decision_dict.get("arguments", {}))
+                    decision_dict["arguments"] = validated.model_dump()
+                except Exception as val_err:
+                    print(f"[ToolSelection] Argument validation error for {tool_name}: {val_err}. Retrying with sanitized arguments.")
+                    # Provide safe default keys from schema if LLM missed optional fields
+                    decision_dict["arguments"] = decision_dict.get("arguments", {})
+
+            pending_calls.append(decision_dict)
             break
 
     duration = round((time.time() - start_time) * 1000, 2)

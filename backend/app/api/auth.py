@@ -46,10 +46,9 @@ def login(login_in: UserLogin, db: Session = Depends(get_db)):
         "user": user
     }
 
+from app.core.dependencies import get_current_user
+
 @router.get("/me", response_model=UserOut)
-def get_current_user(user_id: str = "demo-user-123", db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        # Fallback demo user
-        user = db.query(User).first()
-    return user
+def read_current_user(current_user: User = Depends(get_current_user)):
+    """Return profile details for the currently authenticated user."""
+    return current_user
