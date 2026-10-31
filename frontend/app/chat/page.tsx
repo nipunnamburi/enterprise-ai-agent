@@ -134,52 +134,76 @@ function ChatContent() {
       </p>
 
       {/* Quick Demo Links */}
-      <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-5 text-center text-xs font-bold">
-        <span className="text-slate-500 mr-2 uppercase">Quick Demo Prompts:</span>
-        {QUICK_DEMOS.map((d, i) => (
-          <button
-            key={i}
-            onClick={() => setInputMessage(d.prompt)}
-            className="mx-1 my-0.5 px-2.5 py-1 bg-white border border-slate-300 rounded text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white transition-colors"
-          >
-            {d.name}
-          </button>
-        ))}
+      <div className="bg-[#0b101d]/80 border border-slate-800/80 p-3.5 rounded-xl mb-6 backdrop-blur-sm shadow-inner">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono">
+            Interactive Scenario Presets:
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {QUICK_DEMOS.map((d, i) => (
+            <button
+              key={i}
+              onClick={() => setInputMessage(d.prompt)}
+              className="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-800/90 text-slate-300 hover:text-emerald-300 transition-all text-left shadow-xs"
+            >
+              {d.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Interactive Form */}
       <form onSubmit={handleSubmit} className="mb-6">
         <div className="ref-form-group">
-          <label>Agent Request / Query:</label>
+          <label className="flex items-center justify-between text-xs font-semibold text-slate-300 mb-2">
+            <span>Agent Directive / Query:</span>
+            <span className="text-[11px] font-mono text-slate-500">Press Send to dispatch to LangGraph State Machine</span>
+          </label>
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type query or select demo prompt above..."
+            placeholder="Type query or select scenario preset above..."
             required
             disabled={isProcessing}
+            className="w-full bg-[#070b14] border border-slate-800 text-slate-100 placeholder-slate-500 text-sm px-4 py-3 rounded-lg focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40 transition-all font-mono"
           />
         </div>
 
-        <div className="ref-buttons">
-          <input
+        <div className="ref-buttons flex items-center gap-2.5">
+          <button
             type="submit"
-            value={isProcessing ? "Executing Workflow..." : "Send Agent Request"}
-            className="ref-btn-primary"
             disabled={isProcessing}
-          />
-          <input
+            className="ref-btn-primary flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isProcessing ? (
+              <>
+                <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+                <span>Executing Workflow...</span>
+              </>
+            ) : (
+              <>
+                <span>⚡</span>
+                <span>Dispatch Workflow</span>
+              </>
+            )}
+          </button>
+          <button
             type="button"
-            value="Clear Input"
             onClick={handleClear}
             className="ref-btn-secondary"
-          />
-          <input
+          >
+            Clear Input
+          </button>
+          <button
             type="button"
-            value="Reset Session"
             onClick={handleResetChat}
             className="ref-btn-secondary"
-          />
+          >
+            Reset Session
+          </button>
         </div>
       </form>
 
@@ -190,55 +214,76 @@ function ChatContent() {
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`p-4 rounded-lg border ${
+              className={`p-5 rounded-xl border transition-all ${
                 msg.role === "user"
-                  ? "bg-blue-50 border-blue-200"
-                  : "bg-white border-slate-300 shadow-xs"
+                  ? "bg-slate-900/60 border-slate-800 text-slate-100 shadow-sm"
+                  : "bg-[#0b101d]/90 border-emerald-500/30 text-slate-100 shadow-md ring-1 ring-emerald-500/10"
               }`}
             >
-              <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-200">
-                <span className="text-xs font-bold text-[#1e3a8a] uppercase">
-                  {msg.role === "user" ? "User Request" : "Autonomous Agent Response"}
+              <div className="flex justify-between items-center mb-3 pb-2 border-b border-slate-800/80">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded tracking-wide ${
+                      msg.role === "user"
+                        ? "bg-cyan-950/60 text-cyan-300 border border-cyan-800/50"
+                        : "bg-emerald-950/60 text-emerald-300 border border-emerald-700/50"
+                    }`}
+                  >
+                    {msg.role === "user" ? "USER DIRECTIVE" : "ELYSIUM AGENT ENGINE"}
+                  </span>
+                  {msg.role === "assistant" && msg.confidence && (
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/30 border border-emerald-900 px-1.5 py-0.5 rounded">
+                      Confidence: {msg.confidence}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[11px] font-mono text-slate-500">
+                  {new Date(msg.created_at).toLocaleTimeString()}
                 </span>
-                <span className="text-[11px] text-slate-500">{new Date(msg.created_at).toLocaleTimeString()}</span>
               </div>
 
-              <div className="text-xs text-slate-800 leading-relaxed space-y-2 prose prose-xs max-w-none">
+              <div className="text-xs text-slate-200 leading-relaxed space-y-2 prose prose-invert prose-xs max-w-none">
                 {msg.role === "assistant" ? (
                   <ReactMarkdown
                     components={{
-                      h1: ({ ...props }) => <h1 className="text-sm font-bold text-[#1e3a8a] mt-2 mb-1" {...props} />,
-                      h2: ({ ...props }) => <h2 className="text-xs font-bold text-[#1e3a8a] mt-2 mb-1" {...props} />,
-                      h3: ({ ...props }) => <h3 className="text-xs font-semibold text-slate-800 mt-2 mb-1" {...props} />,
-                      p: ({ ...props }) => <p className="mb-1 leading-normal" {...props} />,
-                      ul: ({ ...props }) => <ul className="list-disc pl-4 mb-1 space-y-0.5" {...props} />,
-                      ol: ({ ...props }) => <ol className="list-decimal pl-4 mb-1 space-y-0.5" {...props} />,
-                      li: ({ ...props }) => <li className="leading-normal" {...props} />,
-                      strong: ({ ...props }) => <strong className="font-semibold text-slate-900" {...props} />,
-                      em: ({ ...props }) => <em className="italic text-slate-700" {...props} />,
-                      code: ({ ...props }) => <code className="bg-slate-100 text-slate-800 px-1 py-0.5 rounded text-[11px] font-mono" {...props} />,
+                      h1: ({ ...props }) => <h1 className="text-sm font-bold text-emerald-400 mt-3 mb-1" {...props} />,
+                      h2: ({ ...props }) => <h2 className="text-xs font-bold text-cyan-300 mt-2.5 mb-1" {...props} />,
+                      h3: ({ ...props }) => <h3 className="text-xs font-semibold text-slate-200 mt-2 mb-1" {...props} />,
+                      p: ({ ...props }) => <p className="mb-1 leading-relaxed text-slate-300" {...props} />,
+                      ul: ({ ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1 text-slate-300" {...props} />,
+                      ol: ({ ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1 text-slate-300" {...props} />,
+                      li: ({ ...props }) => <li className="leading-relaxed" {...props} />,
+                      strong: ({ ...props }) => <strong className="font-semibold text-white" {...props} />,
+                      em: ({ ...props }) => <em className="italic text-slate-400" {...props} />,
+                      code: ({ ...props }) => (
+                        <code className="bg-[#050811] text-emerald-300 border border-slate-800 px-1.5 py-0.5 rounded text-[11px] font-mono" {...props} />
+                      ),
                     }}
                   >
                     {msg.content}
                   </ReactMarkdown>
                 ) : (
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                  <div className="whitespace-pre-wrap font-sans text-slate-200 text-sm leading-relaxed">{msg.content}</div>
                 )}
               </div>
 
               {/* Citations and Tools */}
-              {msg.sources && msg.sources.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-slate-200 text-xs">
-                  <span className="font-bold text-cyan-800">Citations: </span>
-                  <span className="text-slate-600">{msg.sources.join(", ")}</span>
+              {(msg.sources?.length || msg.tools_used?.length) ? (
+                <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex flex-wrap gap-2 text-xs">
+                  {msg.sources && msg.sources.length > 0 && (
+                    <div className="flex items-center gap-1.5 bg-cyan-950/40 border border-cyan-800/40 px-2 py-0.5 rounded text-[11px]">
+                      <span className="font-bold text-cyan-400 font-mono uppercase tracking-wider text-[10px]">Sources:</span>
+                      <span className="text-cyan-200 font-mono">{msg.sources.join(", ")}</span>
+                    </div>
+                  )}
+                  {msg.tools_used && msg.tools_used.length > 0 && (
+                    <div className="flex items-center gap-1.5 bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded text-[11px]">
+                      <span className="font-bold text-amber-400 font-mono uppercase tracking-wider text-[10px]">Tools:</span>
+                      <span className="text-amber-200 font-mono">{msg.tools_used.join(", ")}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {msg.tools_used && msg.tools_used.length > 0 && (
-                <div className="mt-1 text-xs">
-                  <span className="font-bold text-amber-800">Tools Called: </span>
-                  <span className="font-mono text-slate-700">{msg.tools_used.join(", ")}</span>
-                </div>
-              )}
+              ) : null}
             </div>
           ))}
         </div>
@@ -251,26 +296,26 @@ function ChatContent() {
             <h3 className="ref-subheading mb-0">
               Agent Execution & Decision Trace {latestDuration ? `(${latestDuration}ms)` : ""}
             </h3>
-            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 self-start sm:self-auto">
+            <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800 self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => setTraceViewMode("elysia_tree")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-md transition-all ${
                   traceViewMode === "elysia_tree"
-                    ? "bg-[#1e3a8a] text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-emerald-500 text-slate-950 shadow-sm"
+                    : "text-slate-400 hover:text-slate-200"
                 }`}
               >
-                <GitBranch className="w-3.5 h-3.5 text-emerald-400" />
+                <GitBranch className="w-3.5 h-3.5" />
                 Elysia Decision Tree
               </button>
               <button
                 type="button"
                 onClick={() => setTraceViewMode("table")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-md transition-all ${
                   traceViewMode === "table"
-                    ? "bg-[#1e3a8a] text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-emerald-500 text-slate-950 shadow-sm"
+                    : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -299,11 +344,11 @@ function ChatContent() {
               <tbody>
                 {latestSteps.map((step, idx) => (
                   <tr key={idx}>
-                    <td className="text-center font-bold">{idx + 1}</td>
-                    <td><b className="text-[#1e3a8a]">{step.step_name}</b></td>
-                    <td><span className="text-green-700 font-bold">&#10004; {step.status}</span></td>
-                    <td>{step.duration_ms} ms</td>
-                    <td>{step.description}</td>
+                    <td className="text-center font-mono font-bold text-slate-400">{idx + 1}</td>
+                    <td><b className="font-mono text-emerald-400">{step.step_name}</b></td>
+                    <td><span className="text-emerald-400 font-mono font-bold">&#10004; {step.status}</span></td>
+                    <td className="font-mono text-slate-300">{step.duration_ms} ms</td>
+                    <td className="text-slate-300 text-xs">{step.description}</td>
                   </tr>
                 ))}
               </tbody>
@@ -313,11 +358,11 @@ function ChatContent() {
       )}
 
       {/* Bottom Navigation Links */}
-      <div className="ref-link mt-8 pt-4 border-t border-slate-200">
+      <div className="ref-link mt-8 pt-4 border-t border-slate-800">
         <Link href="/">Back to Dashboard</Link> | 
-        <Link href="/documents">View Knowledge Base Documents</Link> | 
-        <Link href="/memory">View Persistent Memories</Link> | 
-        <Link href="/tools">Inspect Tool Logs</Link>
+        <Link href="/documents">Knowledge Base Documents</Link> | 
+        <Link href="/memory">Persistent Memories</Link> | 
+        <Link href="/tools">Deterministic Tool Registry</Link>
       </div>
     </div>
   );
@@ -325,7 +370,7 @@ function ChatContent() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<div className="text-center p-8 text-sm font-bold text-[#1e3a8a]">Loading Workspace...</div>}>
+    <Suspense fallback={<div className="text-center p-8 text-sm font-mono text-emerald-400">Loading Elysium Agent Workspace...</div>}>
       <ChatContent />
     </Suspense>
   );
