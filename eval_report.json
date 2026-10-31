@@ -1,10 +1,16 @@
 {
+  "benchmark_title": "Enterprise AI Agent Multi-Metric Quality Evaluation",
   "total_test_cases": 20,
-  "rag_retrieval_accuracy_pct": 90.9,
-  "tool_selection_accuracy_pct": 100.0,
-  "answer_accuracy_pct": 85.0,
-  "average_latency_seconds": 0.01,
-  "timestamp": "2026-09-24 02:38:50 UTC",
+  "overall_pass_rate_pct": 75.0,
+  "metrics": {
+    "rag_retrieval_accuracy_pct": 100.0,
+    "tool_selection_accuracy_pct": 100.0,
+    "numerical_accuracy_pct": 68.8,
+    "mean_semantic_similarity": 0.341,
+    "mean_token_f1_score": 0.323,
+    "average_latency_seconds": 0.008
+  },
+  "timestamp": "2026-10-31 10:34:09 UTC",
   "test_results": [
     {
       "id": 1,
@@ -12,15 +18,20 @@
       "question": "What is the return window duration in our refund policy?",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.04,
+      "numerical_passed": true,
+      "semantic_similarity": 0.1248,
+      "token_precision": 0.1023,
+      "token_recall": 0.6,
+      "token_f1": 0.1748,
+      "latency_s": 0.028,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- in transit, or fails within thirty (30) days of delivery, the 15% restocking fee is strictly waived The customer is entitled to a one hu..."
     },
     {
       "id": 2,
@@ -28,16 +39,20 @@
       "question": "What restocking fee applies to standard undamaged hardware returns?",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.4612,
+      "token_precision": 0.0795,
+      "token_recall": 0.5833,
+      "token_f1": 0.14,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
-        "[Source: customer_support_policy.pdf, page 1]"
-      ]
+        "[Source: refund_policy.pdf, page 1]"
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- d order number (e.g., ORD-1024 or 1024) and proof of purchase are required for all return processing Section 2: Restocking Fees & Condit..."
     },
     {
       "id": 3,
@@ -45,16 +60,20 @@
       "question": "Is restocking fee charged for defective or DOA items under our return policy?",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.4528,
+      "token_precision": 0.0674,
+      "token_recall": 0.4615,
+      "token_f1": 0.1176,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
-        "[Source: customer_support_policy.pdf, page 1]"
-      ]
+        "[Source: refund_policy.pdf, page 1]"
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- d order number (e.g., ORD-1024 or 1024) and proof of purchase are required for all return processing Section 2: Restocking Fees & Condit..."
     },
     {
       "id": 4,
@@ -62,16 +81,20 @@
       "question": "How many days of paid time off do full-time employees receive according to the employee handbook?",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.6702,
+      "token_precision": 0.3714,
+      "token_recall": 0.8667,
+      "token_f1": 0.52,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
         "[Source: employee_handbook.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- Enterprise Global Employee Handbook & Guidelines Section 4: Paid Time Off (PTO) & Leave Full-time employees receive 20 days of paid time..."
     },
     {
       "id": 5,
@@ -79,34 +102,42 @@
       "question": "What is the remote work home office stipend and monthly internet reimbursement in the handbook?",
       "overall_passed": false,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": false,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": false,
+      "semantic_similarity": 0.1873,
+      "token_precision": 0.0857,
+      "token_recall": 0.2,
+      "token_f1": 0.12,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
         "[Source: employee_handbook.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- Enterprise Global Employee Handbook & Guidelines Section 4: Paid Time Off (PTO) & Leave Full-time employees receive 20 days of paid time..."
     },
     {
       "id": 6,
       "category": "RAG",
       "question": "What uptime percentage is guaranteed for Enterprise Cloud Suite in the product documentation?",
-      "overall_passed": false,
+      "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": false,
-      "retrieval_passed": false,
-      "latency_s": 0.01,
+      "retrieval_passed": true,
+      "numerical_passed": true,
+      "semantic_similarity": 0.4081,
+      "token_precision": 0.2812,
+      "token_recall": 0.75,
+      "token_f1": 0.4091,
+      "latency_s": 0.007,
       "tools_used": [
-        "search_documents",
-        "calculator"
+        "calculator",
+        "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
-        "[Source: employee_handbook.pdf, page 1]"
-      ]
+        "[Source: product_documentation.pdf, page 1]"
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- Enterprise Cloud Suite - Technical Architecture & SLAs Section 1: Service Level Agreement (SLA) Enterprise Cloud Suite guarantees 99.95%..."
     },
     {
       "id": 7,
@@ -114,52 +145,65 @@
       "question": "What are the response time SLAs for urgent and high priority support tickets?",
       "overall_passed": false,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": false,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": false,
+      "semantic_similarity": 0.0014,
+      "token_precision": 0.0,
+      "token_recall": 0.0,
+      "token_f1": 0.0,
+      "latency_s": 0.009,
       "tools_used": [
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
         "[Source: customer_support_policy.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** 2026-09-12T02:36:11.750936 (49 days elapsed)\n- **Items:**..."
     },
     {
       "id": 8,
       "category": "RAG",
       "question": "What is the maximum discretionary goodwill credit a customer success manager can issue?",
-      "overall_passed": true,
+      "overall_passed": false,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": false,
+      "semantic_similarity": 0.2857,
+      "token_precision": 0.0303,
+      "token_recall": 0.0714,
+      "token_f1": 0.0426,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
         "[Source: customer_support_policy.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- Customer Support Escalation & Compensation Policy Section 1: Ticket Priority Response Windows Urgent tickets must receive a technical en..."
     },
     {
       "id": 9,
       "category": "Tool_Calling",
       "question": "Calculate the refund for a $2,499.00 order subject to a 15% restocking fee deduction.",
-      "overall_passed": true,
+      "overall_passed": false,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": false,
+      "semantic_similarity": 0.5939,
+      "token_precision": 0.2593,
+      "token_recall": 0.5385,
+      "token_f1": 0.35,
+      "latency_s": 0.008,
       "tools_used": [
-        "search_documents",
         "customer_order_lookup",
-        "calculator"
+        "calculator",
+        "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Calculate the refund for a $2,499.00 order subject to a 15% restocking fee deduction.\n- **Cal..."
     },
     {
       "id": 10,
@@ -167,13 +211,18 @@
       "question": "Look up order 1024 and check the delivery date, status, and total amount.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.0,
+      "token_precision": 0.2917,
+      "token_recall": 0.7,
+      "token_f1": 0.4118,
+      "latency_s": 0.006,
       "tools_used": [
         "customer_order_lookup"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** 2026-09-12T02:36:11.750936 (49 days elapsed)\n- **Items:**..."
     },
     {
       "id": 11,
@@ -181,13 +230,18 @@
       "question": "Query the total actual sales revenue vs target revenue for Q3 2024.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.1121,
+      "token_precision": 0.3846,
+      "token_recall": 0.625,
+      "token_f1": 0.4762,
+      "latency_s": 0.009,
       "tools_used": [
         "query_database"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "### Q3 Sales Performance Analysis\n- **Actual Q3 Revenue:** $957,500.00\n- **Target Q3 Revenue:** $910,000.00\n- **Difference:** +$47,500.00 (+5.22% over target)\n-..."
     },
     {
       "id": 12,
@@ -195,14 +249,19 @@
       "question": "Calculate the percentage difference between actual sales of 720000 and target of 650000.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.0548,
+      "token_precision": 0.1923,
+      "token_recall": 0.4545,
+      "token_f1": 0.2703,
+      "latency_s": 0.007,
       "tools_used": [
         "calculator",
         "query_database"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Calculate the percentage difference between actual sales of 720000 and target of 650000.\n- **..."
     },
     {
       "id": 13,
@@ -210,13 +269,18 @@
       "question": "Query customer database for customer code CUST-1001.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.2863,
+      "token_precision": 0.3684,
+      "token_recall": 0.5833,
+      "token_f1": 0.4516,
+      "latency_s": 0.007,
       "tools_used": [
         "query_database"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "### Customer Profile: Jane Doe (CUST-1001)\n- **Company:** GlobalTech Enterprises\n- **Email:** jane.doe@globaltech.com\n- **Account Tier:** Enterprise\n- **Account..."
     },
     {
       "id": 14,
@@ -224,34 +288,43 @@
       "question": "Analyze the customer complaint for order 1024, verify our refund policy, check delivery eligibility, calculate the refund, and prepare a response.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.4886,
+      "token_precision": 0.2031,
+      "token_recall": 0.7222,
+      "token_f1": 0.3171,
+      "latency_s": 0.008,
       "tools_used": [
-        "search_documents",
         "customer_order_lookup",
+        "generate_report",
         "calculator",
-        "generate_report"
+        "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
-        "[Source: customer_support_policy.pdf, page 1]"
-      ]
+        "[Source: refund_policy.pdf, page 1]"
+      ],
+      "generated_answer_snippet": "### Refund Eligibility Summary for Order #1024\n- **Eligibility Status:** Eligible for 100% full refund.\n- **Delivery Window:** Delivered 49 calendar days ago (w..."
     },
     {
       "id": 15,
       "category": "Multi_Step",
       "question": "Compare Q3 sales against our target, query the database, calculate the percentage difference, and summarize regional performance.",
-      "overall_passed": true,
+      "overall_passed": false,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": false,
+      "semantic_similarity": 0.2495,
+      "token_precision": 0.2333,
+      "token_recall": 0.3889,
+      "token_f1": 0.2917,
+      "latency_s": 0.007,
       "tools_used": [
         "calculator",
         "query_database"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Compare Q3 sales against our target, query the database, calculate the percentage difference,..."
     },
     {
       "id": 16,
@@ -259,17 +332,21 @@
       "question": "Investigate ticket TICK-501, check order 1024 warranty and return policy, and determine if restocking fee applies.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.0,
+      "token_precision": 0.0833,
+      "token_recall": 0.1176,
+      "token_f1": 0.0976,
+      "latency_s": 0.007,
       "tools_used": [
-        "search_documents",
-        "customer_order_lookup"
+        "customer_order_lookup",
+        "search_documents"
       ],
       "sources": [
-        "[Source: refund_policy.pdf, page 1]",
-        "[Source: product_documentation.pdf, page 1]"
-      ]
+        "[Source: refund_policy.pdf, page 1]"
+      ],
+      "generated_answer_snippet": "### Order #1024 Details\n- **Status:** delivered\n- **Total Amount:** $2,499.00 USD\n- **Delivery Date:** 2026-09-12T02:36:11.750936 (49 days elapsed)\n- **Items:**..."
     },
     {
       "id": 17,
@@ -277,11 +354,16 @@
       "question": "My preferred response style is concise bullet points.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.2744,
+      "token_precision": 0.3333,
+      "token_recall": 0.75,
+      "token_f1": 0.4615,
+      "latency_s": 0.006,
       "tools_used": [],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "I have recorded your preference: **My preferred response style is concise bullet points.**. I will apply this formatting style to all future responses and summa..."
     },
     {
       "id": 18,
@@ -289,15 +371,20 @@
       "question": "Summarize the refund policy under my preferred style.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.6051,
+      "token_precision": 0.1798,
+      "token_recall": 0.7619,
+      "token_f1": 0.2909,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
-      ]
+      ],
+      "generated_answer_snippet": "### Summary of Policy\n- ded free of charge for defective items Standard voluntary returns incur customer-paid return freight Section 3: Refund Calculation Examp..."
     },
     {
       "id": 19,
@@ -305,13 +392,18 @@
       "question": "What is our company policy on corporate spaceship refueling protocols?",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 0.5646,
+      "token_precision": 0.6,
+      "token_recall": 0.4615,
+      "token_f1": 0.5217,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "The knowledge base does not contain information on corporate spaceship refueling protocols."
     },
     {
       "id": 20,
@@ -319,13 +411,18 @@
       "question": "Check order 999999 for refund eligibility.",
       "overall_passed": true,
       "tool_selection_passed": true,
-      "answer_accuracy_passed": true,
       "retrieval_passed": true,
-      "latency_s": 0.01,
+      "numerical_passed": true,
+      "semantic_similarity": 1.0,
+      "token_precision": 1.0,
+      "token_recall": 1.0,
+      "token_f1": 1.0,
+      "latency_s": 0.006,
       "tools_used": [
         "customer_order_lookup"
       ],
-      "sources": []
+      "sources": [],
+      "generated_answer_snippet": "Order query failed: No matching customer or order found with provided identifiers."
     }
   ]
 }

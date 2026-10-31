@@ -112,8 +112,16 @@ class LLMClient:
             )
 
         elif schema == ToolDecision:
+            # Check if execution context or system prompt specifies the target tool
+            target_tool = None
+            tool_match = re.search(r"\"current_tool_needed\":\s*\"([a-z_]+)\"", user_prompt)
+            if not tool_match:
+                tool_match = re.search(r"tool\s*(?:name\s*is)?\s*['\"]([a-z_]+)['\"]", system_prompt)
+            if tool_match:
+                target_tool = tool_match.group(1)
+
             # 1. search_documents
-            if "search_documents" in user_prompt:
+            if target_tool == "search_documents" or (not target_tool and "search_documents" in user_prompt):
                 # Extract clean query
                 q_match = re.search(r"user_objective[\"']?:\s*[\"']([^\"']+)[\"']", user_prompt)
                 search_query = q_match.group(1)[:100] if q_match else user_prompt[:80]
@@ -124,7 +132,7 @@ class LLMClient:
                 )
 
             # 2. customer_order_lookup
-            elif "customer_order_lookup" in user_prompt:
+            elif target_tool == "customer_order_lookup" or (not target_tool and "customer_order_lookup" in user_prompt):
                 order_num = None
                 m = re.search(r"(?:order|ord|#)\s*([0-9]{3,7})", prompt_lower)
                 if m:
@@ -140,7 +148,7 @@ class LLMClient:
                 )
 
             # 3. query_database
-            elif "query_database" in user_prompt:
+            elif target_tool == "query_database" or (not target_tool and "query_database" in user_prompt):
                 if "cust-" in prompt_lower or "customer" in prompt_lower:
                     m = re.search(r"(cust-[0-9]{3,6})", prompt_lower)
                     code = m.group(1).upper() if m else "CUST-1001"
@@ -166,7 +174,7 @@ class LLMClient:
                 )
 
             # 4. calculator
-            elif "calculator" in prompt_lower or "calculator" in user_prompt:
+            elif target_tool == "calculator" or (not target_tool and ("calculator" in prompt_lower or "calculator" in user_prompt)):
                 expr = None
                 # Check for percentage difference between two numbers in prompt
                 two_nums = re.findall(r"\b(\d+(?:\.\d+)?)\b", user_prompt)
@@ -203,7 +211,7 @@ class LLMClient:
                 )
 
             # 5. web_search
-            elif "web_search" in user_prompt:
+            elif target_tool == "web_search" or (not target_tool and "web_search" in user_prompt):
                 query_text = user_prompt[:100]
                 return ToolDecision(
                     tool_name="web_search",
@@ -212,7 +220,7 @@ class LLMClient:
                 )
 
             # 6. generate_report
-            elif "generate_report" in user_prompt:
+            elif target_tool == "generate_report" or (not target_tool and "generate_report" in user_prompt):
                 return ToolDecision(
                     tool_name="generate_report",
                     arguments={

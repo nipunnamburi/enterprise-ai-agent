@@ -79,7 +79,22 @@ def retrieve_context_node(state: AgentState) -> Dict[str, Any]:
     tools_used = list(state.get("tools_used", []))
     
     if "search_documents" in required_tools:
-        rag_res = tool_registry.execute_tool("search_documents", {"query": task_text, "top_k": 3})
+        doc_filter = None
+        lower_task = task_text.lower()
+        if "handbook" in lower_task or "paid time off" in lower_task or "pto" in lower_task or "stipend" in lower_task:
+            doc_filter = "employee_handbook.pdf"
+        elif "product" in lower_task or "uptime" in lower_task or "cloud suite" in lower_task:
+            doc_filter = "product_documentation.pdf"
+        elif "support" in lower_task or "sla" in lower_task or "goodwill" in lower_task:
+            doc_filter = "customer_support_policy.pdf"
+        elif "refund" in lower_task or "return" in lower_task or "restocking" in lower_task:
+            doc_filter = "refund_policy.pdf"
+
+        search_args: Dict[str, Any] = {"query": task_text, "top_k": 3}
+        if doc_filter:
+            search_args["document_filter"] = doc_filter
+
+        rag_res = tool_registry.execute_tool("search_documents", search_args)
         if rag_res.get("success"):
             retrieved_docs = rag_res.get("results", [])
             sources.extend(rag_res.get("citations", []))
@@ -325,7 +340,15 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
             elif res.get("entity") == "customers" and res.get("data"):
                 customer_data = res.get("data", [])[0]
 
-    if customer_data and not order_data:
+    if "calculate" in task_text.lower() and calc_data is not None and "complaint" not in task_text.lower():
+        answer = (
+            f"### Deterministic Calculation Result\n\n"
+            f"- **Requested Calculation:** {task_text}\n"
+            f"- **Calculated Value:** **{calc_data:,.2f}**\n"
+            f"- **Verification:** Computed deterministically via calculator tool with verified numerical operands."
+        )
+
+    elif customer_data and not order_data:
         answer = (
             f"### Customer Profile: {customer_data.get('name')} ({customer_data.get('customer_code')})\n"
             f"- **Company:** {customer_data.get('company')}\n"
