@@ -158,6 +158,7 @@ export default function DashboardPage() {
       {/* Navigation Links (Matching PDF Reference Bottom Links) */}
       <div className="ref-link mt-8 pt-4 border-t border-slate-200">
         <Link href="/chat">Open Agent Workspace</Link> | 
+        <Link href="/elysia">Explore Elysia Decision Tree</Link> | 
         <Link href="/documents">View Knowledge Base Documents</Link> | 
         <Link href="/memory">View Persistent Memories</Link> | 
         <Link href="/tools">Inspect Tool Execution Logs</Link>

@@ -4,6 +4,8 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { GitBranch, List } from "lucide-react";
+import ElysiaDecisionTree from "@/components/elysia/ElysiaDecisionTree";
 import { sendAgentChat, fetchConversations, fetchConversationDetails } from "@/lib/api";
 import { ExecutionStepInfo, MessageItem } from "@/types";
 
@@ -38,6 +40,7 @@ function ChatContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [latestSteps, setLatestSteps] = useState<ExecutionStepInfo[]>([]);
   const [latestDuration, setLatestDuration] = useState<number | null>(null);
+  const [traceViewMode, setTraceViewMode] = useState<"elysia_tree" | "table">("elysia_tree");
 
   useEffect(() => {
     fetchConversations()
@@ -241,34 +244,71 @@ function ChatContent() {
         </div>
       )}
 
-      {/* LangGraph Execution Trace Table */}
+      {/* Execution Trace & Elysia Decision Tree */}
       {latestSteps.length > 0 && (
-        <div>
-          <h3 className="ref-subheading">
-            LangGraph Multi-Step Execution Trace {latestDuration ? `(${latestDuration}ms)` : ""}
-          </h3>
-          <table className="ref-table">
-            <thead>
-              <tr>
-                <th style={{ width: "8%" }}>Step #</th>
-                <th style={{ width: "22%" }}>State Machine Node</th>
-                <th style={{ width: "15%" }}>Status</th>
-                <th style={{ width: "12%" }}>Duration</th>
-                <th style={{ width: "43%" }}>Description / Output Summary</th>
-              </tr>
-            </thead>
-            <tbody>
-              {latestSteps.map((step, idx) => (
-                <tr key={idx}>
-                  <td className="text-center font-bold">{idx + 1}</td>
-                  <td><b className="text-[#1e3a8a]">{step.step_name}</b></td>
-                  <td><span className="text-green-700 font-bold">&#10004; {step.status}</span></td>
-                  <td>{step.duration_ms} ms</td>
-                  <td>{step.description}</td>
+        <div className="mt-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <h3 className="ref-subheading mb-0">
+              Agent Execution & Decision Trace {latestDuration ? `(${latestDuration}ms)` : ""}
+            </h3>
+            <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setTraceViewMode("elysia_tree")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                  traceViewMode === "elysia_tree"
+                    ? "bg-[#1e3a8a] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <GitBranch className="w-3.5 h-3.5 text-emerald-400" />
+                Elysia Decision Tree
+              </button>
+              <button
+                type="button"
+                onClick={() => setTraceViewMode("table")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                  traceViewMode === "table"
+                    ? "bg-[#1e3a8a] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <List className="w-3.5 h-3.5" />
+                Linear Audit Table
+              </button>
+            </div>
+          </div>
+
+          {traceViewMode === "elysia_tree" ? (
+            <ElysiaDecisionTree
+              steps={latestSteps}
+              totalDurationMs={latestDuration}
+              confidence={messages[messages.length - 1]?.confidence}
+            />
+          ) : (
+            <table className="ref-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "8%" }}>Step #</th>
+                  <th style={{ width: "22%" }}>State Machine Node</th>
+                  <th style={{ width: "15%" }}>Status</th>
+                  <th style={{ width: "12%" }}>Duration</th>
+                  <th style={{ width: "43%" }}>Description / Output Summary</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {latestSteps.map((step, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center font-bold">{idx + 1}</td>
+                    <td><b className="text-[#1e3a8a]">{step.step_name}</b></td>
+                    <td><span className="text-green-700 font-bold">&#10004; {step.status}</span></td>
+                    <td>{step.duration_ms} ms</td>
+                    <td>{step.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
 

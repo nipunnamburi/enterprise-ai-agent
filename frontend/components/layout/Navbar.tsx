@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { name: "Dashboard", href: "/" },
   { name: "Agent Chat & Workspace", href: "/chat" },
+  { name: "Elysia Decision Tree", href: "/elysia" },
   { name: "Knowledge Base (RAG)", href: "/documents" },
   { name: "Memory Records", href: "/memory" },
   { name: "Tool Activity & Logs", href: "/tools" },
@@ -59,6 +60,16 @@ export default function Navbar() {
             className="px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 hover:bg-[#16a34a] hover:text-white transition-all flex items-center gap-1 border border-slate-200"
           >
             <span>FastAPI Docs</span>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+          <a
+            href="http://127.0.0.1:8000/elysia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-md bg-emerald-50 text-emerald-800 hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-1 border border-emerald-300 font-bold"
+            title="Launch Mounted Elysia AI Studio"
+          >
+            <span>Elysia Studio</span>
             <ExternalLink className="h-3 w-3" />
           </a>
         </nav>
