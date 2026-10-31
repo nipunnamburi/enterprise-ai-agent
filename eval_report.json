@@ -10,7 +10,7 @@
     "mean_token_f1_score": 0.323,
     "average_latency_seconds": 0.008
   },
-  "timestamp": "2026-10-31 10:34:09 UTC",
+  "timestamp": "2026-10-31 11:15:00 UTC",
   "test_results": [
     {
       "id": 1,
@@ -24,7 +24,7 @@
       "token_precision": 0.1023,
       "token_recall": 0.6,
       "token_f1": 0.1748,
-      "latency_s": 0.028,
+      "latency_s": 0.029,
       "tools_used": [
         "search_documents"
       ],
@@ -66,7 +66,7 @@
       "token_precision": 0.0674,
       "token_recall": 0.4615,
       "token_f1": 0.1176,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
@@ -87,7 +87,7 @@
       "token_precision": 0.3714,
       "token_recall": 0.8667,
       "token_f1": 0.52,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
@@ -108,7 +108,7 @@
       "token_precision": 0.0857,
       "token_recall": 0.2,
       "token_f1": 0.12,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
@@ -151,7 +151,7 @@
       "token_precision": 0.0,
       "token_recall": 0.0,
       "token_f1": 0.0,
-      "latency_s": 0.009,
+      "latency_s": 0.008,
       "tools_used": [
         "customer_order_lookup",
         "search_documents"
@@ -173,7 +173,7 @@
       "token_precision": 0.0303,
       "token_recall": 0.0714,
       "token_f1": 0.0426,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
@@ -194,7 +194,7 @@
       "token_precision": 0.2593,
       "token_recall": 0.5385,
       "token_f1": 0.35,
-      "latency_s": 0.008,
+      "latency_s": 0.007,
       "tools_used": [
         "customer_order_lookup",
         "calculator",
@@ -236,7 +236,7 @@
       "token_precision": 0.3846,
       "token_recall": 0.625,
       "token_f1": 0.4762,
-      "latency_s": 0.009,
+      "latency_s": 0.008,
       "tools_used": [
         "query_database"
       ],
@@ -275,7 +275,7 @@
       "token_precision": 0.3684,
       "token_recall": 0.5833,
       "token_f1": 0.4516,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "query_database"
       ],
@@ -297,8 +297,8 @@
       "latency_s": 0.008,
       "tools_used": [
         "customer_order_lookup",
-        "generate_report",
         "calculator",
+        "generate_report",
         "search_documents"
       ],
       "sources": [
@@ -318,7 +318,7 @@
       "token_precision": 0.2333,
       "token_recall": 0.3889,
       "token_f1": 0.2917,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "calculator",
         "query_database"
@@ -338,7 +338,7 @@
       "token_precision": 0.0833,
       "token_recall": 0.1176,
       "token_f1": 0.0976,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "customer_order_lookup",
         "search_documents"
@@ -377,7 +377,7 @@
       "token_precision": 0.1798,
       "token_recall": 0.7619,
       "token_f1": 0.2909,
-      "latency_s": 0.006,
+      "latency_s": 0.005,
       "tools_used": [
         "search_documents"
       ],
@@ -417,7 +417,7 @@
       "token_precision": 1.0,
       "token_recall": 1.0,
       "token_f1": 1.0,
-      "latency_s": 0.006,
+      "latency_s": 0.005,
       "tools_used": [
         "customer_order_lookup"
       ],
