@@ -10,7 +10,7 @@
     "mean_token_f1_score": 0.323,
     "average_latency_seconds": 0.008
   },
-  "timestamp": "2026-10-31 11:15:00 UTC",
+  "timestamp": "2026-10-31 17:49:55 UTC",
   "test_results": [
     {
       "id": 1,
@@ -45,7 +45,7 @@
       "token_precision": 0.0795,
       "token_recall": 0.5833,
       "token_f1": 0.14,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [
         "search_documents"
       ],
@@ -66,7 +66,7 @@
       "token_precision": 0.0674,
       "token_recall": 0.4615,
       "token_f1": 0.1176,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
@@ -87,7 +87,7 @@
       "token_precision": 0.3714,
       "token_recall": 0.8667,
       "token_f1": 0.52,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
@@ -108,7 +108,7 @@
       "token_precision": 0.0857,
       "token_recall": 0.2,
       "token_f1": 0.12,
-      "latency_s": 0.007,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
@@ -153,8 +153,8 @@
       "token_f1": 0.0,
       "latency_s": 0.008,
       "tools_used": [
-        "customer_order_lookup",
-        "search_documents"
+        "search_documents",
+        "customer_order_lookup"
       ],
       "sources": [
         "[Source: customer_support_policy.pdf, page 1]"
@@ -194,11 +194,11 @@
       "token_precision": 0.2593,
       "token_recall": 0.5385,
       "token_f1": 0.35,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [
-        "customer_order_lookup",
         "calculator",
-        "search_documents"
+        "search_documents",
+        "customer_order_lookup"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
@@ -217,7 +217,7 @@
       "token_precision": 0.2917,
       "token_recall": 0.7,
       "token_f1": 0.4118,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "customer_order_lookup"
       ],
@@ -236,7 +236,7 @@
       "token_precision": 0.3846,
       "token_recall": 0.625,
       "token_f1": 0.4762,
-      "latency_s": 0.008,
+      "latency_s": 0.009,
       "tools_used": [
         "query_database"
       ],
@@ -255,10 +255,10 @@
       "token_precision": 0.1923,
       "token_recall": 0.4545,
       "token_f1": 0.2703,
-      "latency_s": 0.007,
+      "latency_s": 0.008,
       "tools_used": [
-        "calculator",
-        "query_database"
+        "query_database",
+        "calculator"
       ],
       "sources": [],
       "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Calculate the percentage difference between actual sales of 720000 and target of 650000.\n- **..."
@@ -296,10 +296,10 @@
       "token_f1": 0.3171,
       "latency_s": 0.008,
       "tools_used": [
-        "customer_order_lookup",
-        "calculator",
         "generate_report",
-        "search_documents"
+        "calculator",
+        "search_documents",
+        "customer_order_lookup"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
@@ -320,8 +320,8 @@
       "token_f1": 0.2917,
       "latency_s": 0.006,
       "tools_used": [
-        "calculator",
-        "query_database"
+        "query_database",
+        "calculator"
       ],
       "sources": [],
       "generated_answer_snippet": "### Deterministic Calculation Result\n\n- **Requested Calculation:** Compare Q3 sales against our target, query the database, calculate the percentage difference,..."
@@ -338,10 +338,10 @@
       "token_precision": 0.0833,
       "token_recall": 0.1176,
       "token_f1": 0.0976,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
-        "customer_order_lookup",
-        "search_documents"
+        "search_documents",
+        "customer_order_lookup"
       ],
       "sources": [
         "[Source: refund_policy.pdf, page 1]"
@@ -360,7 +360,7 @@
       "token_precision": 0.3333,
       "token_recall": 0.75,
       "token_f1": 0.4615,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [],
       "sources": [],
       "generated_answer_snippet": "I have recorded your preference: **My preferred response style is concise bullet points.**. I will apply this formatting style to all future responses and summa..."
@@ -377,7 +377,7 @@
       "token_precision": 0.1798,
       "token_recall": 0.7619,
       "token_f1": 0.2909,
-      "latency_s": 0.005,
+      "latency_s": 0.006,
       "tools_used": [
         "search_documents"
       ],
@@ -398,7 +398,7 @@
       "token_precision": 0.6,
       "token_recall": 0.4615,
       "token_f1": 0.5217,
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "tools_used": [
         "search_documents"
       ],
@@ -417,7 +417,7 @@
       "token_precision": 1.0,
       "token_recall": 1.0,
       "token_f1": 1.0,
-      "latency_s": 0.005,
+      "latency_s": 0.006,
       "tools_used": [
         "customer_order_lookup"
       ],

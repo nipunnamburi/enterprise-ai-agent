@@ -17,12 +17,13 @@ def get_current_user(
 ) -> User:
     """Validate JWT access token and return authenticated user instance."""
     if not credentials or not credentials.credentials:
-        # Check if a seeded demo user exists for local development convenience
-        demo_user = db.query(User).filter(User.email == "analyst@enterprise.ai").first()
-        if not demo_user:
-            demo_user = db.query(User).first()
-        if demo_user:
-            return demo_user
+        # Check if demo access is explicitly allowed for local development convenience
+        if settings.ALLOW_DEMO_AUTH:
+            demo_user = db.query(User).filter(User.email == "analyst@enterprise.ai").first()
+            if not demo_user:
+                demo_user = db.query(User).first()
+            if demo_user:
+                return demo_user
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication credentials were not provided",

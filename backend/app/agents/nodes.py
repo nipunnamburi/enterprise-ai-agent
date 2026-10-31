@@ -28,7 +28,7 @@ def analyze_request_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "analyze_request",
         "status": "completed",
-        "duration_ms": max(duration, 120.0),
+        "duration_ms": duration,
         "description": f"Analyzed user request intent and verified {len(user_mems)} active memory constraints (format: {format_pref}).",
         "details": {"format_preference": format_pref, "objective": task_text[:100]}
     }
@@ -58,7 +58,7 @@ def create_plan_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "create_plan",
         "status": "completed",
-        "duration_ms": max(duration, 150.0),
+        "duration_ms": duration,
         "description": f"Formulated execution plan: {', '.join(plan_dict['steps'])} with tools: {tools_str}.",
         "details": plan_dict
     }
@@ -105,7 +105,7 @@ def retrieve_context_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "retrieve_context",
         "status": "completed",
-        "duration_ms": max(duration, 180.0),
+        "duration_ms": duration,
         "description": f"Retrieved {len(retrieved_docs)} verified knowledge chunks from Chroma vector database.",
         "details": {"retrieved_count": len(retrieved_docs), "sources": list(set(sources))}
     }
@@ -180,7 +180,7 @@ def select_tools_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "select_tools",
         "status": "completed",
-        "duration_ms": max(duration, 90.0),
+        "duration_ms": duration,
         "description": f"Selected next tool: {next_tool_desc}.",
         "details": {"pending_calls": pending_calls}
     }
@@ -217,7 +217,7 @@ def execute_tools_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "execute_tools",
         "status": "completed",
-        "duration_ms": max(duration, 200.0),
+        "duration_ms": duration,
         "description": f"Executed tools: {', '.join(executed_info) or 'None'}.",
         "details": {"results": tool_results[-len(pending):] if pending else []}
     }
@@ -241,7 +241,7 @@ def evaluate_results_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "evaluate_results",
         "status": "completed",
-        "duration_ms": max(duration, 110.0),
+        "duration_ms": duration,
         "description": "Evaluated gathered evidence against objective: " + ("Ready to synthesize final response." if all_done else "Additional tool execution required."),
         "details": {"is_complete": all_done, "tools_executed": tools_used, "tools_required": required_tools}
     }
@@ -270,7 +270,7 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
         trace_entry = {
             "step_name": "generate_response",
             "status": "completed",
-            "duration_ms": max(duration, 250.0),
+            "duration_ms": duration,
             "description": "Evaluated knowledge base: determined request is outside enterprise scope and returned factual non-existence disclosure.",
             "details": {}
         }
@@ -290,7 +290,7 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
         trace_entry = {
             "step_name": "generate_response",
             "status": "completed",
-            "duration_ms": max(duration, 250.0),
+            "duration_ms": duration,
             "description": "Handled non-existent order query with factual database error report.",
             "details": {}
         }
@@ -309,7 +309,7 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
         trace_entry = {
             "step_name": "generate_response",
             "status": "completed",
-            "duration_ms": max(duration, 200.0),
+            "duration_ms": duration,
             "description": "Acknowledged user preference and recorded in memory.",
             "details": {}
         }
@@ -460,7 +460,7 @@ def generate_response_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "generate_response",
         "status": "completed",
-        "duration_ms": max(duration, 350.0),
+        "duration_ms": duration,
         "description": "Synthesized final authoritative response with strict citation safeguards and deterministic tool calculations.",
         "details": {"sources_count": len(sources), "tools_used_count": len(tools_used)}
     }
@@ -508,7 +508,7 @@ def save_memory_node(state: AgentState) -> Dict[str, Any]:
     trace_entry = {
         "step_name": "save_memory",
         "status": "completed",
-        "duration_ms": max(duration, 60.0),
+        "duration_ms": duration,
         "description": desc,
         "details": {"new_memories": new_memories_saved}
     }

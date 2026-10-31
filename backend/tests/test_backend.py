@@ -9,8 +9,13 @@ if backend_dir not in sys.path:
 
 from app.main import app
 from app.tools.registry import tool_registry
+from app.core.security import create_access_token
 
 client = TestClient(app)
+
+def get_auth_headers(sub="demo-user-123"):
+    token = create_access_token(subject=sub)
+    return {"Authorization": f"Bearer {token}"}
 
 def test_health_check():
     response = client.get("/health")
@@ -18,7 +23,7 @@ def test_health_check():
     assert response.json()["status"] == "healthy"
 
 def test_list_tools():
-    response = client.get("/tools")
+    response = client.get("/tools", headers=get_auth_headers())
     assert response.status_code == 200
     tools = response.json()
     tool_names = [t["name"] for t in tools]
@@ -54,7 +59,7 @@ def test_agent_chat_multistep():
         "message": "Analyze customer complaint for order 1024, check refund policy, and calculate the refund amount.",
         "user_id": "demo-user-123"
     }
-    response = client.post("/agent/chat", json=payload)
+    response = client.post("/agent/chat", json=payload, headers=get_auth_headers())
     assert response.status_code == 200
     data = response.json()
     assert "answer" in data

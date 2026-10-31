@@ -134,13 +134,20 @@ python evaluate.py
 ================================================================================
                          BENCHMARK EVALUATION RESULTS                           
 ================================================================================
-RAG Retrieval Accuracy:   90.9%
-Tool Selection Accuracy:  100.0%
-Answer Accuracy:          85.0%
-Average Latency:          0.01s (Local / Mock) | 1.8s (Live OpenAI)
-Detailed Report Saved To: eval_report.json
+Overall Pass Rate:             75.0% (15/20)
+Numerical Accuracy:            68.8%
+RAG Retrieval Accuracy:        100.0%
+Tool Selection Accuracy:       100.0%
+Mean Semantic Similarity:      0.341 (Cosine metric)
+Mean Token Overlap F1 Score:   0.323
+Average Request Latency:       0.008s (Local in-memory / Mock)
+Detailed Report Saved To:      eval_report.json
 ================================================================================
 ```
+
+> **Evaluation Transparency & Latency Note**:
+> - The evaluation suite currently achieves a **75.0% overall pass rate** and **68.8% numerical accuracy**. Failed cases in `eval_report.json` relate to document chunk truncation (e.g. employee handbook stipends, goodwill credits) and tool routing heuristics.
+> - Execution timings in the trace reflect raw node execution duration; local mocked benchmarks measure in-memory latency (~8ms) rather than network round-trip time with live OpenAI APIs.
 
 ---
 

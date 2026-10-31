@@ -62,7 +62,9 @@ def test_auth_protected_routes_with_valid_and_invalid_tokens():
 def test_file_upload_validation_and_sanitization():
     """Verify document upload enforces allowed file extensions and sanitizes paths."""
     # Attempt to upload an unauthorized file extension (.exe)
+    token = create_access_token(subject="demo-user-123")
+    headers = {"Authorization": f"Bearer {token}"}
     files = {"file": ("malicious_script.exe", b"print('hack')", "application/x-msdownload")}
-    res = client.post("/documents/upload", files=files)
+    res = client.post("/documents/upload", files=files, headers=headers)
     assert res.status_code == 400
     assert "Unsupported file extension" in res.json()["detail"]
