@@ -17,26 +17,26 @@ import {
 } from "lucide-react";
 import { ExecutionStepInfo } from "@/types";
 
-interface ElysiaDecisionTreeProps {
+interface DecisionTreeProps {
   steps: ExecutionStepInfo[];
   totalDurationMs?: number | null;
   taskObjective?: string;
   confidence?: string;
 }
 
-export default function ElysiaDecisionTree({
+export default function DecisionTree({
   steps,
   totalDurationMs,
   taskObjective,
   confidence = "high"
-}: ElysiaDecisionTreeProps) {
+}: DecisionTreeProps) {
   const [selectedStepIndex, setSelectedStepIndex] = useState<number>(steps.length ? steps.length - 1 : 0);
 
   if (!steps || steps.length === 0) {
     return (
       <div className="p-8 text-center bg-slate-50 border border-dashed border-slate-300 rounded-lg">
         <GitBranch className="w-10 h-10 text-slate-400 mx-auto mb-2 animate-pulse" />
-        <p className="text-sm font-semibold text-slate-700">Elysia Decision Tree Awaiting Task</p>
+        <p className="text-sm font-semibold text-slate-700">Execution Decision Tree Awaiting Task</p>
         <p className="text-xs text-slate-500 mt-1">
           Execute a query in chat or select a demo to visualize the agent's hierarchical reasoning branches and tool activations.
         </p>
@@ -65,7 +65,7 @@ export default function ElysiaDecisionTree({
     }
   };
 
-  const getElysiaBadge = (stepName: string) => {
+  const getStepBadge = (stepName: string) => {
     switch (stepName) {
       case "analyze_request":
         return { label: "STATUS / COMPLIANCE", color: "bg-emerald-100 text-emerald-800 border-emerald-300" };
@@ -87,7 +87,7 @@ export default function ElysiaDecisionTree({
   };
 
   const activeStep = steps[selectedStepIndex] || steps[0];
-  const activeBadge = getElysiaBadge(activeStep.step_name);
+  const activeBadge = getStepBadge(activeStep.step_name);
 
   return (
     <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
@@ -95,7 +95,7 @@ export default function ElysiaDecisionTree({
       <div className="bg-gradient-to-r from-slate-900 to-[#1e3a8a] text-white px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <GitBranch className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-bold uppercase tracking-wider">Elysia Agent Decision Tree</span>
+          <span className="text-xs font-bold uppercase tracking-wider">Agent Decision Tree</span>
         </div>
         <div className="flex items-center gap-2 text-[11px] font-mono">
           {totalDurationMs !== undefined && totalDurationMs !== null && (
@@ -120,7 +120,7 @@ export default function ElysiaDecisionTree({
           <div className="relative pl-4 space-y-2.5 before:absolute before:left-2 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-300">
             {steps.map((step, idx) => {
               const isSelected = selectedStepIndex === idx;
-              const badge = getElysiaBadge(step.step_name);
+              const badge = getStepBadge(step.step_name);
               const icon = getNodeIcon(step.step_name);
 
               return (
@@ -174,7 +174,7 @@ export default function ElysiaDecisionTree({
           </div>
         </div>
 
-        {/* Right Column: Elysia Node State Inspector */}
+        {/* Right Column: Execution Node State Inspector */}
         <div className="md:col-span-6 p-4 flex flex-col justify-between bg-white overflow-y-auto max-h-[460px]">
           <div>
             {/* Header info */}
@@ -202,7 +202,7 @@ export default function ElysiaDecisionTree({
             {/* Description */}
             <div className="mb-3">
               <label className="text-[10px] font-bold uppercase text-slate-400 block mb-1">
-                Elysia Reasoning & Action Description
+                Step Reasoning & Action Description
               </label>
               <div className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded border border-slate-200 leading-relaxed font-sans">
                 {activeStep.description}
@@ -224,7 +224,7 @@ export default function ElysiaDecisionTree({
 
           {/* Footer badge */}
           <div className="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-[11px] text-slate-400">
-            <span>Verified by Elysia Agent Runtime</span>
+            <span>Verified by Agent Runtime</span>
             <span className="font-mono text-emerald-600 font-semibold">Status: 200 OK</span>
           </div>
         </div>

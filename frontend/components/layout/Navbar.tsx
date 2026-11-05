@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { name: "Dashboard", href: "/" },
   { name: "Agent Chat & Workspace", href: "/chat" },
-  { name: "Elysia Decision Tree", href: "/elysia" },
   { name: "Knowledge Base (RAG)", href: "/documents" },
   { name: "Memory Records", href: "/memory" },
   { name: "Tool Activity & Logs", href: "/tools" },
@@ -36,7 +35,7 @@ export default function Navbar() {
                 Live 24x7
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">LangGraph &bull; Chroma RAG &bull; Elysia Tree &bull; MCP &bull; PostgreSQL</p>
+            <p className="text-[11px] text-slate-400 font-medium">LangGraph &bull; Chroma RAG &bull; MCP &bull; PostgreSQL</p>
           </div>
         </div>
 
@@ -63,24 +62,13 @@ export default function Navbar() {
           <div className="h-4 w-[1px] bg-slate-800 mx-1 hidden sm:block" />
 
           <a
-            href="http://127.0.0.1:8000/docs"
+            href="https://enterprise-ai-agent-k2h9.onrender.com/docs"
             target="_blank"
             rel="noopener noreferrer"
             className="px-2.5 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1 border border-slate-800 text-[11px]"
           >
-            <span>FastAPI</span>
+            <span>FastAPI Docs</span>
             <ExternalLink className="h-3 w-3 text-slate-500" />
-          </a>
-          <a
-            href="http://127.0.0.1:8000/elysia"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center gap-1.5 font-bold shadow-glow-emerald text-[11px]"
-            title="Launch Mounted Elysia AI Studio"
-          >
-            <Sparkles className="h-3 w-3 text-amber-300" />
-            <span>Elysia Studio</span>
-            <ExternalLink className="h-3 w-3" />
           </a>
         </nav>
       </div>

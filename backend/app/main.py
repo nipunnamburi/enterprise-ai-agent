@@ -68,22 +68,6 @@ def root():
         "health_check": "/health"
     }
 
-# Mount Elysia AI static application assets if installed in environment
-elysia_static = Path(__file__).resolve().parent.parent.parent / ".venv/lib/python3.11/site-packages/elysia/api/static"
-if elysia_static.exists():
-    _next_dir = elysia_static / "_next"
-    if _next_dir.exists():
-        app.mount("/_next", StaticFiles(directory=str(_next_dir)), name="elysia-next-assets")
-    app.mount("/elysia-static", StaticFiles(directory=str(elysia_static)), name="elysia-static")
-
-    @app.get("/elysia", tags=["Elysia AI Studio"])
-    @app.get("/elysia/", tags=["Elysia AI Studio"])
-    def serve_elysia():
-        index_file = elysia_static / "index.html"
-        if index_file.exists():
-            return FileResponse(index_file)
-        return {"status": "error", "message": "Elysia index.html not found"}
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

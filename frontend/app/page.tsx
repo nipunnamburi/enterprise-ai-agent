@@ -279,7 +279,6 @@ export default function DashboardPage() {
       {/* Navigation Links */}
       <div className="ref-link pt-4 border-t border-slate-800/80">
         <Link href="/chat">Open Agent Workspace</Link> &bull;
-        <Link href="/elysia">Explore Elysia Decision Tree</Link> &bull;
         <Link href="/documents">View Knowledge Base Documents</Link> &bull;
         <Link href="/memory">View Persistent Memories</Link> &bull;
         <Link href="/tools">Inspect Tool Execution Logs</Link>

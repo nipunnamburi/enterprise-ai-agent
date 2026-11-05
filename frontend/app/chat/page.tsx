@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { GitBranch, List } from "lucide-react";
-import ElysiaDecisionTree from "@/components/elysia/ElysiaDecisionTree";
+import DecisionTree from "@/components/trace/DecisionTree";
 import { sendAgentChat, fetchConversations, fetchConversationDetails } from "@/lib/api";
 import { ExecutionStepInfo, MessageItem } from "@/types";
 
@@ -40,7 +40,7 @@ function ChatContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [latestSteps, setLatestSteps] = useState<ExecutionStepInfo[]>([]);
   const [latestDuration, setLatestDuration] = useState<number | null>(null);
-  const [traceViewMode, setTraceViewMode] = useState<"elysia_tree" | "table">("elysia_tree");
+  const [traceViewMode, setTraceViewMode] = useState<"decision_tree" | "table">("decision_tree");
 
   useEffect(() => {
     fetchConversations()
@@ -299,15 +299,15 @@ function ChatContent() {
             <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800 self-start sm:self-auto">
               <button
                 type="button"
-                onClick={() => setTraceViewMode("elysia_tree")}
+                onClick={() => setTraceViewMode("decision_tree")}
                 className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-md transition-all ${
-                  traceViewMode === "elysia_tree"
+                  traceViewMode === "decision_tree"
                     ? "bg-emerald-500 text-slate-950 shadow-sm"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 <GitBranch className="w-3.5 h-3.5" />
-                Elysia Decision Tree
+                Decision Tree
               </button>
               <button
                 type="button"
@@ -324,8 +324,8 @@ function ChatContent() {
             </div>
           </div>
 
-          {traceViewMode === "elysia_tree" ? (
-            <ElysiaDecisionTree
+          {traceViewMode === "decision_tree" ? (
+            <DecisionTree
               steps={latestSteps}
               totalDurationMs={latestDuration}
               confidence={messages[messages.length - 1]?.confidence}
