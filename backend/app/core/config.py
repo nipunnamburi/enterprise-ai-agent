@@ -1,6 +1,8 @@
+import json
 import os
+from typing import Optional, Union, List
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env", extra="allow")
@@ -10,18 +12,35 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Environment & Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "super-secret-enterprise-ai-key-change-in-production")
+    SECRET_KEY: str = "super-secret-enterprise-ai-key-change-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     ALGORITHM: str = "HS256"
-    ALLOW_DEMO_AUTH: bool = os.getenv("ALLOW_DEMO_AUTH", "true").lower() in ("true", "1", "yes")
-    CORS_ALLOWED_ORIGINS: list = [
-        origin.strip()
-        for origin in os.getenv(
-            "CORS_ALLOWED_ORIGINS",
-            "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001"
-        ).split(",")
-        if origin.strip()
+    ALLOW_DEMO_AUTH: bool = True
+    CORS_ALLOWED_ORIGINS: Union[List[str], str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
     ]
+
+    @field_validator("CORS_ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return []
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed if str(item).strip()]
+                except Exception:
+                    pass
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        elif isinstance(v, (list, tuple, set)):
+            return [str(origin).strip() for origin in v if str(origin).strip()]
+        return []
     
     # Database
     DATABASE_URL: str = os.getenv(
