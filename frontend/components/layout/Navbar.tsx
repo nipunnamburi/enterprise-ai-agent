@@ -18,29 +18,28 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="w-full bg-[#0b0f19]/80 backdrop-blur-md border-b border-slate-800/80 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <header className="w-full bg-[var(--color-paper-2)] border-b border-[var(--color-rule)] sticky top-0 z-50">
+      <div className="max-w-[1140px] mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-mono">
         {/* Title / Brand */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center font-bold text-sm shadow-glow-emerald">
-            <Sparkles className="w-5 h-5 text-emerald-100" />
+          <div className="w-8 h-8 bg-[var(--color-ink)] text-[var(--color-accent-ink)] flex items-center justify-center font-bold text-xs border border-[var(--color-rule)]">
+            AI
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <Link href="/" className="font-extrabold text-white text-sm hover:text-emerald-400 transition-colors">
-                Enterprise AI Agent
+              <Link href="/" className="font-semibold text-[var(--color-ink)] text-sm tracking-tight hover:underline">
+                ENTERPRISE AI AGENT
               </Link>
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live 24x7
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 text-[10px] border border-[var(--color-rule)] text-[var(--color-ink)]">
+                SPEC 2.4 &bull; LIVE
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">LangGraph &bull; Chroma RAG &bull; MCP &bull; PostgreSQL</p>
+            <p className="text-[11px] text-[var(--color-muted)] font-normal">LANGGRAPH &bull; CHROMA RAG &bull; MCP &bull; POSTGRES</p>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+        <nav className="flex flex-wrap items-center gap-1 text-xs">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -48,10 +47,10 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg transition-all",
+                  "px-2.5 py-1 transition-all border",
                   isActive
-                    ? "bg-slate-800 text-emerald-400 border border-slate-700 shadow-sm font-bold"
-                    : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+                    ? "bg-[var(--color-paper-3)] text-[var(--color-ink)] border-[var(--color-ink)] font-semibold"
+                    : "text-[var(--color-muted)] border-transparent hover:border-[var(--color-rule-2)] hover:text-[var(--color-ink)]"
                 )}
               >
                 {link.name}
@@ -59,16 +58,16 @@ export default function Navbar() {
             );
           })}
           
-          <div className="h-4 w-[1px] bg-slate-800 mx-1 hidden sm:block" />
+          <div className="h-4 w-[1px] bg-[var(--color-rule-2)] mx-1 hidden sm:block" />
 
           <a
             href="https://enterprise-ai-agent-k2h9.onrender.com/docs"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-2.5 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1 border border-slate-800 text-[11px]"
+            className="px-2 py-1 bg-[var(--color-paper)] text-[var(--color-ink)] border border-[var(--color-rule)] hover:bg-[var(--color-paper-3)] transition-all flex items-center gap-1 text-[11px]"
           >
-            <span>FastAPI Docs</span>
-            <ExternalLink className="h-3 w-3 text-slate-500" />
+            <span>FASTAPI DOCS</span>
+            <ExternalLink className="h-3 w-3" />
           </a>
         </nav>
       </div>

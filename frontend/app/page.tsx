@@ -10,13 +10,9 @@ import {
   Zap, 
   Brain, 
   Clock, 
-  Sparkles, 
   ArrowRight, 
-  ShieldCheck, 
   CheckCircle2, 
-  GitBranch,
-  Search,
-  ExternalLink
+  Search
 } from "lucide-react";
 import { fetchDashboardStats } from "@/lib/api";
 import { DashboardStats } from "@/types";
@@ -26,31 +22,36 @@ const DEMO_OPTIONS = [
     id: "demo-1",
     label: "Demo 1: RAG Policy Retrieval (Refund Policy & Return Window)",
     prompt: "What does our refund policy say regarding return windows and restocking fees?",
-    badge: "Vector RAG"
+    badge: "Vector RAG",
+    dwg: "DWG-01"
   },
   {
     id: "demo-2",
     label: "Demo 2: Deterministic Tool Calling (Order 1024 + 15% Fee)",
     prompt: "Calculate the refund for order 1024 with a 15% restocking fee deduction.",
-    badge: "AST Math"
+    badge: "AST Math",
+    dwg: "DWG-02"
   },
   {
     id: "demo-3",
     label: "Demo 3: Autonomous Multi-Step Complaint Audit (Order 1024 Full Audit)",
     prompt: "Analyze this customer complaint for order 1024, check our refund policy, look up order details, determine eligibility, calculate refund, and prepare a response.",
-    badge: "Full Graph"
+    badge: "Full Graph",
+    dwg: "DWG-03"
   },
   {
     id: "demo-4",
     label: "Demo 4: Long-Term Memory Preference Registration",
     prompt: "My preferred response style is concise bullet points.",
-    badge: "Memory"
+    badge: "Memory",
+    dwg: "DWG-04"
   },
   {
     id: "demo-5",
     label: "Demo 5: Business Intelligence SQL Query (Q3 Sales Variance)",
     prompt: "Compare Q3 sales against our target, query the database, and calculate the percentage difference.",
-    badge: "Database"
+    badge: "Database",
+    dwg: "DWG-05"
   },
 ];
 
@@ -81,208 +82,210 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="ref-container">
-      {/* Hero Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-3">
-          <Sparkles className="w-3.5 h-3.5" />
-          Elysia-Inspired Agentic Architecture &bull; Production Platform
+    <div className="w-[95%] max-w-[1140px] mx-auto my-5 p-6 md:p-8 bg-[var(--color-paper-2)] border border-[var(--color-rule)] relative blueprint-grid">
+      {/* Blueprint Sheet Header Block */}
+      <header className="border-b border-[var(--color-rule)] pb-5 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[var(--color-muted)] mb-2">
+          <span>Sheet DWG-AI-001 rev 2.4</span>
+          <span>Enterprise state machine</span>
         </div>
-        <h2 className="ref-heading">Enterprise AI Agent Dashboard & System Summary</h2>
-        <p className="text-xs text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          State-of-the-art autonomous AI system coordinating 8-node LangGraph execution, Chroma vector RAG, 
-          deterministic AST math, parameterized SQL lookups, and persistent PostgreSQL memory.
+        <h1 className="text-2xl md:text-3xl font-semibold uppercase text-[var(--color-ink)]">
+          Enterprise AI Agent
+        </h1>
+        <p className="text-xs text-[var(--color-ink-2)] mt-2 max-w-xl">
+          Autonomous execution platform coordinating LangGraph planning, vector retrieval, and deterministic tool calls.
         </p>
-      </div>
 
-      {/* Metrics Card Grid */}
-      <h3 className="ref-subheading">System Telemetry & Knowledge Base Summary</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {/* Metric 1 */}
-        <div className="bg-[#0b1120] border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400">Indexed Documents</span>
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-              <FileText className="w-4 h-4" />
+        {/* Blueprint Dimension String */}
+        <div className="dim-string my-4" />
+      </header>
+
+      {/* System Telemetry & Register */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-3 border-b border-[var(--color-rule-2)] pb-1">
+          <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+            System telemetry and specification register
+          </h2>
+          <span className="text-xs text-[var(--color-muted)]">Metric matrix</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-l border-[var(--color-rule)]">
+          {/* Metric 1 */}
+          <div className="p-4 border-r border-b border-[var(--color-rule)] bg-[var(--color-paper)]">
+            <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mb-2">
+              <span>Indexed documents</span>
+              <span className="mono-num">DWG-DOC</span>
+            </div>
+            <div className="text-3xl font-semibold text-[var(--color-ink)] mono-num">
+              {stats?.total_documents ?? 4}
+            </div>
+            <div className="text-[11px] text-[var(--color-ink-2)] mt-1">
+              Verified in vector store
             </div>
           </div>
-          <div className="text-2xl font-black text-white mb-1">
-            {stats?.total_documents ?? 4} <span className="text-xs font-normal text-slate-400">files</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Active in Vector Store
-          </div>
-        </div>
 
-        {/* Metric 2 */}
-        <div className="bg-[#0b1120] border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400">Chroma Vector Chunks</span>
-            <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
-              <Search className="w-4 h-4" />
+          {/* Metric 2 */}
+          <div className="p-4 border-r border-b border-[var(--color-rule)] bg-[var(--color-paper)]">
+            <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mb-2">
+              <span>Vector chunks</span>
+              <span className="mono-num">DIM-HNSW</span>
+            </div>
+            <div className="text-3xl font-semibold text-[var(--color-ink)] mono-num">
+              {stats?.indexed_chunks ?? 7}
+            </div>
+            <div className="text-[11px] text-[var(--color-ink-2)] mt-1">
+              Cosine similarity index
             </div>
           </div>
-          <div className="text-2xl font-black text-white mb-1">
-            {stats?.indexed_chunks ?? 7} <span className="text-xs font-normal text-slate-400">chunks</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-cyan-400 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-            Cosine Similarity HNSW
-          </div>
-        </div>
 
-        {/* Metric 3 */}
-        <div className="bg-[#0b1120] border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400">Autonomous Tasks</span>
-            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
-              <Cpu className="w-4 h-4" />
+          {/* Metric 3 */}
+          <div className="p-4 border-r border-b border-[var(--color-rule)] bg-[var(--color-paper)]">
+            <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mb-2">
+              <span>Autonomous tasks</span>
+              <span className="mono-num">GRAPH-08</span>
+            </div>
+            <div className="text-3xl font-semibold text-[var(--color-ink)] mono-num">
+              {stats?.total_tasks ?? 20}
+            </div>
+            <div className="text-[11px] text-[var(--color-ink-2)] mt-1">
+              8-node state machine
             </div>
           </div>
-          <div className="text-2xl font-black text-white mb-1">
-            {stats?.total_tasks ?? 20} <span className="text-xs font-normal text-slate-400">tasks</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-blue-400 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            8-Node State Machine
-          </div>
-        </div>
 
-        {/* Metric 4 */}
-        <div className="bg-[#0b1120] border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400">Deterministic Tool Calls</span>
-            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
-              <Zap className="w-4 h-4" />
+          {/* Metric 4 */}
+          <div className="p-4 border-r border-b border-[var(--color-rule)] bg-[var(--color-paper)]">
+            <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mb-2">
+              <span>Tool executions</span>
+              <span className="mono-num">AST-CALL</span>
+            </div>
+            <div className="text-3xl font-semibold text-[var(--color-ink)] mono-num">
+              {stats?.total_tool_calls ?? 45}
+            </div>
+            <div className="text-[11px] text-[var(--color-ink-2)] mt-1">
+              Deterministic calculations
             </div>
           </div>
-          <div className="text-2xl font-black text-white mb-1">
-            {stats?.total_tool_calls ?? 45} <span className="text-xs font-normal text-slate-400">calls</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-amber-400 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            AST Math / SQL Database
-          </div>
-        </div>
 
-        {/* Metric 5 */}
-        <div className="bg-[#0b1120] border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400">Long-Term Memory Facts</span>
-            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
-              <Brain className="w-4 h-4" />
+          {/* Metric 5 */}
+          <div className="p-4 border-r border-b border-[var(--color-rule)] bg-[var(--color-paper)]">
+            <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mb-2">
+              <span>Persisted memories</span>
+              <span className="mono-num">MEM-STORE</span>
+            </div>
+            <div className="text-3xl font-semibold text-[var(--color-ink)] mono-num">
+              {stats?.total_memories ?? 4}
+            </div>
+            <div className="text-[11px] text-[var(--color-ink-2)] mt-1">
+              PostgreSQL stored facts
             </div>
           </div>
-          <div className="text-2xl font-black text-white mb-1">
-            {stats?.total_memories ?? 4} <span className="text-xs font-normal text-slate-400">facts</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-purple-400 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-            Persisted in PostgreSQL
-          </div>
-        </div>
 
-        {/* Metric 6 */}
-        <div className="bg-[#0b1120] border border-slate-800 rounded-xl p-4 flex flex-col justify-between hover:border-slate-700 transition-all">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-400">Average Task Latency</span>
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-              <Clock className="w-4 h-4" />
+          {/* Metric 6 */}
+          <div className="p-4 border-r border-b border-[var(--color-rule)] bg-[var(--color-paper)]">
+            <div className="flex items-center justify-between text-xs text-[var(--color-muted)] mb-2">
+              <span>Execution latency</span>
+              <span className="mono-num">SEC/TASK</span>
+            </div>
+            <div className="text-3xl font-semibold text-[var(--color-ink)] mono-num">
+              {stats?.avg_latency_seconds ?? 0.05}s
+            </div>
+            <div className="text-[11px] text-[var(--color-ink-2)] mt-1">
+              Pipeline response time
             </div>
           </div>
-          <div className="text-2xl font-black text-white mb-1">
-            {stats?.avg_latency_seconds ?? 0.05} <span className="text-xs font-normal text-slate-400">seconds</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Optimal Execution Pipeline
-          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Interactive Workflow Launcher */}
-      <h3 className="ref-subheading">Agent Workflow Entry Form</h3>
-      <form onSubmit={handleLaunchWorkflow} className="bg-[#0b1120] border border-slate-800 rounded-xl p-6 mb-8">
-        {/* Preset Selector */}
-        <div className="mb-4">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">
-            Select Enterprise Task Scenario:
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {DEMO_OPTIONS.map((demo) => {
-              const isSelected = selectedDemo === demo.id;
-              return (
-                <button
-                  key={demo.id}
-                  type="button"
-                  onClick={() => handleSelectDemo(demo.id)}
-                  className={`text-left p-2.5 rounded-lg border text-xs transition-all flex items-center justify-between gap-2 ${
-                    isSelected
-                      ? "bg-slate-800 border-emerald-500/80 text-white shadow-sm ring-1 ring-emerald-500/30"
-                      : "bg-[#090d16] border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
-                  }`}
-                >
-                  <span className="truncate">{demo.label}</span>
-                  <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-emerald-400 flex-shrink-0">
-                    {demo.badge}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+      {/* Interactive Workflow Launcher (Title Block Style) */}
+      <section className="mb-8 border border-[var(--color-rule)] p-6 bg-[var(--color-paper)]">
+        <div className="flex items-center justify-between border-b border-[var(--color-rule)] pb-2 mb-5">
+          <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+            Workflow title block and execution specification
+          </h2>
+          <span className="text-xs text-[var(--color-muted)]">Entry spec 01</span>
         </div>
 
-        {/* Custom prompt textarea */}
-        <div className="mb-4">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            User Request Objective:
-          </label>
-          <textarea
-            rows={3}
-            value={customPrompt}
-            onChange={(e) => setCustomPrompt(e.target.value)}
-            className="w-full bg-[#090d16] border border-slate-800 rounded-lg p-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-mono"
-            placeholder="Enter request objective for the LangGraph agent..."
-            required
-          />
-        </div>
-
-        {/* Target Model details */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="font-semibold text-slate-300">Target Engine:</span>
-            <span className="bg-slate-900 px-2 py-1 rounded border border-slate-800 font-mono text-emerald-400 text-[11px]">
-              LangGraph 8-Node Stateful Graph (OpenAI Deterministic Mode)
-            </span>
+        <form onSubmit={handleLaunchWorkflow}>
+          {/* Preset Selector */}
+          <div className="mb-5">
+            <label className="text-xs font-medium text-[var(--color-ink)] block mb-2">
+              Preset test elevation
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {DEMO_OPTIONS.map((demo) => {
+                const isSelected = selectedDemo === demo.id;
+                return (
+                  <button
+                    key={demo.id}
+                    type="button"
+                    onClick={() => handleSelectDemo(demo.id)}
+                    className={`text-left p-3 border text-xs transition-colors flex items-center justify-between gap-2 active:bg-[var(--color-paper-3)] ${
+                      isSelected
+                        ? "bg-[var(--color-paper-3)] border-[var(--color-ink)] text-[var(--color-ink)]"
+                        : "bg-[var(--color-paper-2)] border-[var(--color-rule-2)] text-[var(--color-muted)] hover:border-[var(--color-rule)] hover:text-[var(--color-ink)]"
+                    }`}
+                  >
+                    <span className="truncate">{demo.label}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 border border-[var(--color-rule)] text-[var(--color-ink)] flex-shrink-0 mono-num">
+                      {demo.dwg}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setCustomPrompt("")}
-              className="ref-btn-secondary text-xs py-2 px-4"
-            >
-              Clear
-            </button>
-            <button
-              type="submit"
-              className="ref-btn-primary text-xs py-2 px-5"
-            >
-              <span>Execute Agent Workflow</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+          {/* Custom prompt textarea */}
+          <div className="mb-5">
+            <label className="text-xs font-medium text-[var(--color-ink)] block mb-1">
+              Objective definition
+            </label>
+            <textarea
+              rows={3}
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              className="w-full bg-[var(--color-paper-2)] border border-[var(--color-rule)] p-3 text-sm text-[var(--color-ink)] placeholder-[var(--color-muted)] focus:outline-none focus:border-[var(--color-ink)] transition-colors mono-num"
+              placeholder="Enter specification objective for LangGraph..."
+              required
+            />
           </div>
-        </div>
-      </form>
 
-      {/* Navigation Links */}
-      <div className="ref-link pt-4 border-t border-slate-800/80">
-        <Link href="/chat">Open Agent Workspace</Link> &bull;
-        <Link href="/documents">View Knowledge Base Documents</Link> &bull;
-        <Link href="/memory">View Persistent Memories</Link> &bull;
-        <Link href="/tools">Inspect Tool Execution Logs</Link>
-      </div>
+          {/* Actions & Target Engine */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-[var(--color-rule)]">
+            <div className="text-xs text-[var(--color-muted)]">
+              Engine: <span className="text-[var(--color-ink)] mono-num">LangGraph 8-node state machine</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setCustomPrompt("")}
+                className="ref-btn-secondary active:bg-[var(--color-paper-3)] disabled:opacity-50"
+              >
+                Clear
+              </button>
+              <button
+                type="submit"
+                className="ref-btn-primary active:bg-[var(--color-ink-2)] disabled:opacity-50"
+              >
+                <span>Execute agent workflow</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      {/* Blueprint Navigation Footer */}
+      <nav className="flex flex-wrap items-center gap-4 text-xs text-[var(--color-muted)] pt-4 border-t border-[var(--color-rule)]">
+        <Link href="/chat" className="text-[var(--color-ink)] underline hover:no-underline">Open agent workspace</Link>
+        <span>&bull;</span>
+        <Link href="/documents" className="text-[var(--color-ink)] underline hover:no-underline">Knowledge base documents</Link>
+        <span>&bull;</span>
+        <Link href="/memory" className="text-[var(--color-ink)] underline hover:no-underline">Persistent memories</Link>
+        <span>&bull;</span>
+        <Link href="/tools" className="text-[var(--color-ink)] underline hover:no-underline">Tool execution logs</Link>
+      </nav>
     </div>
   );
 }

@@ -14,13 +14,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col font-sans text-slate-100 antialiased bg-[#080c14]">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-screen flex flex-col antialiased">
         <Navbar />
         <main className="flex-1 p-3 md:p-6">
           {children}
         </main>
-        <footer className="text-center py-4 text-xs font-semibold text-slate-500 border-t border-slate-800/80 bg-slate-950/40 backdrop-blur-md">
-          Enterprise AI Research & Automation Agent &bull; Powered by LangGraph, Chroma &amp; Elysia &bull; 2026
+        <footer className="text-center py-4 text-xs font-medium text-[var(--color-muted)] border-t border-[var(--color-rule-2)] bg-[var(--color-paper-2)]">
+          ENTERPRISE AI RESEARCH &amp; AUTOMATION &bull; DWG SPEC 01 &bull; LANGGRAPH STATE MACHINE
         </footer>
       </body>
     </html>
