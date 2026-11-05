@@ -3,8 +3,8 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
-  title: "enterprise ai agent",
-  description: "night console platform coordinating langgraph, chroma, deterministic tools, and persistent memory",
+  title: "agent@enterprise: ~ · terminal",
+  description: "terminal surface coordinating langgraph state machine, chroma vector store, deterministic ast tools, and persistent memory",
 };
 
 export default function RootLayout({
@@ -18,17 +18,28 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,400..700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen flex flex-col antialiased">
+      <body className="min-h-screen flex flex-col antialiased bg-[var(--color-paper)] text-[var(--color-ink)]">
         <Navbar />
         <main className="flex-1 p-3 md:p-6">
           {children}
         </main>
-        <footer className="text-center py-5 text-xs text-[var(--color-muted)] border-t border-[var(--color-rule)] bg-[var(--color-paper-2)]">
-          enterprise ai agent &bull; 8-node state machine &bull; verified telemetry
+        <footer className="py-3 px-4 md:px-8 text-xs text-[var(--color-muted)] border-t border-[var(--color-rule)] bg-[var(--color-paper-2)] flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-[var(--color-accent)] font-bold">[0:agent-core]</span>
+            <span className="text-[var(--color-rule-2)]">|</span>
+            <span>langgraph 0.0.30</span>
+            <span className="text-[var(--color-rule-2)]">|</span>
+            <span>tty: /dev/pts/1</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>status: 0 (ok)</span>
+            <span className="text-[var(--color-rule-2)]">|</span>
+            <span className="text-[var(--color-ink-2)]">theme: terminal</span>
+          </div>
         </footer>
       </body>
     </html>
