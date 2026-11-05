@@ -7,12 +7,17 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.core.config import settings
 from app.core.database import Base, engine
+from app.core.seed import seed_database
 from app.api import auth, agent, documents, conversations, memory, tools, dashboard
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Auto-create tables if not present
+    # Auto-create tables and populate default seed records if needed
     Base.metadata.create_all(bind=engine)
+    try:
+        seed_database()
+    except Exception as e:
+        print(f"[Startup Seed Warning]: {e}")
     print(f"[{settings.PROJECT_NAME}] Service initialized on database {settings.DATABASE_URL.split('///')[-1]}")
     yield
     print(f"[{settings.PROJECT_NAME}] Service shutting down.")
