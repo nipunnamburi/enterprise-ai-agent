@@ -3,15 +3,15 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, ExternalLink, Sparkles, Activity } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { name: "Dashboard", href: "/" },
-  { name: "Agent Chat & Workspace", href: "/chat" },
-  { name: "Knowledge Base (RAG)", href: "/documents" },
-  { name: "Memory Records", href: "/memory" },
-  { name: "Tool Activity & Logs", href: "/tools" },
+  { name: "dashboard", href: "/" },
+  { name: "agent chat", href: "/chat" },
+  { name: "knowledge base", href: "/documents" },
+  { name: "memory", href: "/memory" },
+  { name: "tools & logs", href: "/tools" },
 ];
 
 export default function Navbar() {
@@ -19,27 +19,27 @@ export default function Navbar() {
 
   return (
     <header className="w-full bg-[var(--color-paper-2)] border-b border-[var(--color-rule)] sticky top-0 z-50">
-      <div className="max-w-[1140px] mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-mono">
+      <div className="max-w-[1100px] mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         {/* Title / Brand */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[var(--color-ink)] text-[var(--color-accent-ink)] flex items-center justify-center font-bold text-xs border border-[var(--color-rule)]">
-            AI
+          <div className="w-7 h-7 rounded-[var(--radius-card)] bg-[var(--color-accent)] text-[var(--color-accent-ink)] flex items-center justify-center font-serif text-sm">
+            l
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <Link href="/" className="font-semibold text-[var(--color-ink)] text-sm tracking-tight hover:underline">
-                ENTERPRISE AI AGENT
+              <Link href="/" className="font-serif text-lg text-[var(--color-ink)] hover:text-[var(--color-accent)] transition-colors">
+                enterprise ai agent
               </Link>
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 text-[10px] border border-[var(--color-rule)] text-[var(--color-ink)]">
-                SPEC 2.4 &bull; LIVE
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[var(--radius-pill)] text-[11px] border border-[var(--color-rule)] text-[var(--color-ink-2)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-live)]" />
+                online
               </span>
             </div>
-            <p className="text-[11px] text-[var(--color-muted)] font-normal">LANGGRAPH &bull; CHROMA RAG &bull; MCP &bull; POSTGRES</p>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex flex-wrap items-center gap-1 text-xs">
+        <nav className="flex flex-wrap items-center gap-1.5 text-xs">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -47,10 +47,10 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 className={cn(
-                  "px-2.5 py-1 transition-all border",
+                  "px-3 py-1.5 rounded-[var(--radius-pill)] transition-all",
                   isActive
-                    ? "bg-[var(--color-paper-3)] text-[var(--color-ink)] border-[var(--color-ink)] font-semibold"
-                    : "text-[var(--color-muted)] border-transparent hover:border-[var(--color-rule-2)] hover:text-[var(--color-ink)]"
+                    ? "bg-[var(--color-paper-3)] text-[var(--color-ink)] font-medium"
+                    : "text-[var(--color-muted)] hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)]"
                 )}
               >
                 {link.name}
@@ -58,16 +58,16 @@ export default function Navbar() {
             );
           })}
           
-          <div className="h-4 w-[1px] bg-[var(--color-rule-2)] mx-1 hidden sm:block" />
+          <div className="h-4 w-[1px] bg-[var(--color-rule)] mx-1 hidden sm:block" />
 
           <a
             href="https://enterprise-ai-agent-k2h9.onrender.com/docs"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-2 py-1 bg-[var(--color-paper)] text-[var(--color-ink)] border border-[var(--color-rule)] hover:bg-[var(--color-paper-3)] transition-all flex items-center gap-1 text-[11px]"
+            className="px-3 py-1.5 rounded-[var(--radius-pill)] bg-[var(--color-paper)] text-[var(--color-ink-2)] border border-[var(--color-rule)] hover:border-[var(--color-rule-2)] transition-all flex items-center gap-1 text-[11px]"
           >
-            <span>FASTAPI DOCS</span>
-            <ExternalLink className="h-3 w-3" />
+            <span>fastapi</span>
+            <ExternalLink className="h-3 w-3 text-[var(--color-muted)]" />
           </a>
         </nav>
       </div>

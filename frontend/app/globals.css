@@ -2,33 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* hallmark: blueprint cyanotype | technical drafting material | keylines, dimension strings, chakra petch capitals */
+/* hallmark: lumen night | atmospheric night console | lowercase instrument serif, hairline wells, molten brass signal */
 :root {
-  --color-paper: oklch(35% 0.105 256);
-  --color-paper-2: oklch(31% 0.10 257);
-  --color-paper-3: oklch(26.5% 0.095 258);
-  --color-ink: oklch(97% 0.012 240);
-  --color-ink-2: oklch(90% 0.025 242);
-  --color-muted: oklch(80% 0.045 244);
-  --color-rule: oklch(93% 0.02 240 / 0.85);
-  --color-rule-2: oklch(93% 0.02 240 / 0.32);
-  --color-grid: oklch(97% 0.01 240 / 0.09);
-  --color-grid-2: oklch(97% 0.01 240 / 0.2);
-  --color-accent: oklch(97% 0.012 240);
-  --color-accent-ink: oklch(33% 0.105 256);
-  --color-focus: oklch(97% 0.012 240);
-  --font-display: "Chakra Petch", ui-sans-serif, sans-serif;
-  --font-body: "IBM Plex Sans", ui-sans-serif, sans-serif;
-  --font-outlier: "IBM Plex Mono", ui-monospace, monospace;
-  --radius-card: 0px;
-  --radius-pill: 0px;
+  --color-paper: oklch(12.5% 0.027 290);
+  --color-paper-2: oklch(16% 0.03 290);
+  --color-paper-3: oklch(20% 0.032 290);
+  --color-ink: oklch(96% 0.01 300);
+  --color-ink-2: oklch(85% 0.017 298);
+  --color-muted: oklch(69% 0.026 295);
+  --color-rule: oklch(27% 0.034 290);
+  --color-rule-2: oklch(36% 0.04 292);
+  --rule-blueprint: oklch(96% 0.01 300 / 0.05);
+  --color-accent: oklch(80% 0.15 62);
+  --color-accent-2: oklch(72% 0.15 12);
+  --color-accent-ink: oklch(14% 0.028 290);
+  --color-live: oklch(80% 0.13 155);
+  --color-focus: oklch(80% 0.15 62);
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-outlier: "Geist Mono", ui-monospace, monospace;
+  --radius-card: 10px;
+  --radius-pill: 999px;
   --rule-hair: 1px;
-  --rule-heavy: 2px;
-  --shadow-card: none;
-  --tracking-display: -0.012em;
-  --display-weight: 600;
-  --sheet-inset: 20px;
-  --tick: 14px;
+  --shadow-card: 0 28px 64px -30px oklch(4% 0.02 290 / 0.8);
+  --tracking-display: -0.015em;
+  --display-weight: 400;
+  --dur-long: 600ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
@@ -40,6 +40,7 @@
     margin: 0;
     padding: 0;
     font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
     background-color: var(--color-paper);
     color: var(--color-ink);
     min-height: 100vh;
@@ -49,12 +50,16 @@
 
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: var(--tracking-display);
+    text-transform: lowercase;
   }
 
-  h1, h2 {
-    text-transform: uppercase;
+  h1 {
+    line-height: 0.98;
+  }
+
+  h2 {
     line-height: 1.02;
   }
 
@@ -64,279 +69,149 @@
   }
 }
 
-/* Blueprint drafting keyline and dimension string primitives */
-.blueprint-sheet {
-  width: 95%;
-  max-width: 1140px;
-  margin: 20px auto;
+/* Lumen hairline well and blueprint texture primitives */
+.lumen-well {
   background: var(--color-paper-2);
-  border: var(--rule-heavy) solid var(--color-rule);
-  padding: 24px;
-  position: relative;
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
-.blueprint-grid {
+.lumen-grid {
   background-image: 
-    linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
-  background-size: 24px 24px;
+    linear-gradient(to right, var(--rule-blueprint) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule-blueprint) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-.blueprint-double-line {
+.verb {
+  display: inline-block;
+  color: var(--color-accent-2);
   position: relative;
-  border: var(--rule-hair) solid var(--color-rule);
 }
 
-.blueprint-double-line::after {
+.verb::after {
   content: "";
-  position: absolute;
-  inset: 5px;
-  border: var(--rule-hair) solid var(--color-rule-2);
-  pointer-events: none;
-}
-
-.dim-string {
-  position: relative;
+  display: block;
   height: var(--rule-hair);
-  background: var(--color-rule);
-  margin: 14px 0;
+  background: currentColor;
+  transform-origin: left;
+  animation: draw-underline var(--dur-long) var(--ease-out) both;
 }
 
-.dim-string::before,
-.dim-string::after {
-  content: "";
-  position: absolute;
-  top: calc(var(--tick) / -2);
-  width: var(--rule-hair);
-  height: var(--tick);
-  background: var(--color-rule);
-  transform: rotate(45deg);
-}
-
-.dim-string::before {
-  left: 0;
-}
-
-.dim-string::after {
-  right: 0;
-}
-
-.mono-num {
-  font-family: var(--font-outlier);
-  font-weight: 500;
-}
-
-/* Modern Blueprint Container */
-.ref-container {
-  width: 95%;
-  max-width: 1140px;
-  margin: 20px auto;
-  background: var(--color-paper-2);
-  padding: 28px;
-  border: var(--rule-hair) solid var(--color-rule);
-}
-
-.ref-heading {
-  text-align: left;
-  color: var(--color-ink);
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 600;
-  text-transform: uppercase;
-  line-height: 1.05;
-  letter-spacing: var(--tracking-display);
-  margin-bottom: 8px;
-}
-
-.ref-subheading {
-  text-align: left;
-  color: var(--color-ink);
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  margin: 28px 0 14px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.ref-subheading::before {
-  display: none;
-}
-
-/* Form Styles */
-.ref-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-
-@media (min-width: 640px) {
-  .ref-form-group {
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
+@keyframes draw-underline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 
-.ref-form-group label {
-  width: 180px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.ref-form-group input,
-.ref-form-group select,
-.ref-form-group textarea {
-  flex: 1;
-  padding: 10px 14px;
+.mono-readout {
+  font-family: var(--font-outlier);
   font-size: 13px;
-  border: 1px solid #1e293b;
-  border-radius: 8px;
-  background-color: #0b1120;
-  color: #f1f5f9;
-  outline: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.ref-form-group input:focus,
-.ref-form-group select:focus,
-.ref-form-group textarea:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2), inset 0 1px 2px rgba(0, 0, 0, 0.2);
-  background-color: #0f172a;
-}
-
-.ref-form-group select option {
-  background-color: #0f172a;
-  color: #f1f5f9;
-}
-
-.ref-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 26px;
+  letter-spacing: 0;
 }
 
 .ref-btn-primary {
-  padding: 12px 24px;
-  background: var(--color-ink);
+  padding: 10px 22px;
+  background: var(--color-accent);
   color: var(--color-accent-ink);
-  border: var(--rule-hair) solid var(--color-ink);
-  border-radius: 0;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: none;
-}
-
-.ref-btn-primary:hover {
-  background: var(--color-ink-2);
-}
-
-.ref-btn-secondary {
-  padding: 12px 20px;
-  background: transparent;
-  color: var(--color-ink);
-  border: var(--rule-hair) solid var(--color-rule);
-  border-radius: 0;
+  border: none;
+  border-radius: var(--radius-pill);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
+  text-transform: lowercase;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: opacity 0.15s ease;
+}
+
+.ref-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.ref-btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--color-ink);
+  box-shadow: inset 0 0 0 var(--rule-hair) var(--color-rule-2);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: lowercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s ease;
 }
 
 .ref-btn-secondary:hover {
-  background: var(--color-paper-3);
+  background: var(--color-paper-2);
 }
 
 .ref-btn-primary:disabled,
 .ref-btn-secondary:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-/* Modern Blueprint Data Grid Table */
+/* Modern Lumen Data Grid Table */
 .ref-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   margin: 16px 0 28px 0;
-  background: #0b1120;
+  background: var(--color-paper-2);
   font-size: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   overflow: hidden;
-  border: 1px solid #1e293b;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: var(--rule-hair) solid var(--color-rule);
 }
 
 .ref-table th {
-  background: #0f172a;
-  color: #94a3b8;
-  padding: 12px 14px;
-  text-align: left;
-  font-weight: 700;
+  background-color: var(--color-paper-3);
+  color: var(--color-muted);
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #1e293b;
+  font-weight: 400;
+  text-transform: lowercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: var(--rule-hair) solid var(--color-rule);
 }
 
 .ref-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid #1e293b;
-  color: #cbd5e1;
+  padding: 11px 14px;
+  color: var(--color-ink-2);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
 }
 
 .ref-table tr:last-child td {
   border-bottom: none;
 }
 
-.ref-table tr:nth-child(even) {
-  background-color: rgba(15, 23, 42, 0.4);
+.ref-table tr:hover td {
+  background-color: var(--color-paper-3);
 }
 
-.ref-table tr:hover {
-  background-color: rgba(30, 41, 59, 0.6);
-}
-
-.ref-link {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
-}
-
-.ref-link a {
-  color: #38bdf8;
-  text-decoration: none;
-  margin: 0 10px;
-  transition: color 0.15s ease;
-}
-
-.ref-link a:hover {
-  color: #34d399;
-  text-decoration: underline;
+.ref-container {
+  width: 95%;
+  max-width: 1140px;
+  margin: 20px auto;
+  background: var(--color-paper-2);
+  padding: 28px;
+  border-radius: var(--radius-card);
+  border: var(--rule-hair) solid var(--color-rule);
+  box-shadow: var(--shadow-card);
 }
 
 /* Custom Scrollbar for code and messages */
@@ -346,14 +221,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--color-paper);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--color-rule-2);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--color-muted);
 }
