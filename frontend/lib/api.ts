@@ -8,7 +8,7 @@ import {
   ConversationItem
 } from "@/types";
 
-const RAW_API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1").replace(/\/+$/, "");
+const RAW_API_URL = (process.env.NEXT_API_URL || "http://127.0.0.1:8000/api/v1").replace(/\/+$/, "");
 const API_BASE = RAW_API_URL.endsWith("/api/v1") ? RAW_API_URL : `${RAW_API_URL}/api/v1`;
 
 let cachedToken: string | null = null;
