@@ -27,6 +27,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
+        "https://enterprise-ai-agent-1i8q-k19dddjqr-nipun3.vercel.app",
+        "https://enterprise-ai-agent-1i8q.vercel.app",
     ]
 
     @field_validator("CORS_ALLOWED_ORIGINS", mode="before")
