@@ -1,5 +1,6 @@
 import os
 import sys
+import uuid
 from datetime import datetime, timedelta, timezone
 
 # Add backend directory to sys.path
@@ -12,10 +13,9 @@ from app.core.security import get_password_hash
 from app.models.user import User
 from app.models.business import Customer, Order, Product, SupportTicket, Sale
 from app.models.memory import Memory
-from app.models.document import Document
+from app.models.document import Document, DocumentChunk
 from app.rag.document_loader import DocumentLoader
 from app.rag.text_splitter import RecursiveTextSplitter
-from app.rag.vector_store import vector_store
 
 def seed_database():
     print("[Seed] Creating database tables...")
@@ -231,14 +231,12 @@ def seed_database():
             try:
                 sections = DocumentLoader.load_file(fpath)
                 all_chunks = []
-                doc_id = f"doc_{fname.replace('.', '_')}"
+                doc_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, fname))
 
                 for text_content, meta in sections:
                     meta["document_id"] = doc_id
                     chunks = splitter.create_chunks_with_metadata(text_content, meta)
                     all_chunks.extend(chunks)
-
-                vector_store.add_chunks(all_chunks)
 
                 doc_entry = Document(
                     id=doc_id,
@@ -247,13 +245,26 @@ def seed_database():
                     file_size=os.path.getsize(fpath),
                     chunk_count=len(all_chunks),
                     checksum=DocumentLoader.calculate_checksum(fpath),
-                    status="indexed",
+                    status="COMPLETED",
                     doc_metadata={"chunk_count": len(all_chunks), "source": "sample_seed"}
                 )
                 db.add(doc_entry)
+                db.flush()
+
+                chunk_entries = [
+                    DocumentChunk(
+                        document_id=doc_id,
+                        tenant_id="default",
+                        content=chunk["content"],
+                        chunk_metadata=chunk.get("metadata", {}),
+                    )
+                    for chunk in all_chunks
+                ]
+                db.add_all(chunk_entries)
                 db.commit()
-                print(f"[Seed] Indexed {fname} ({len(all_chunks)} chunks) into Chroma vector store.")
+                print(f"[Seed] Indexed {fname} ({len(all_chunks)} chunks) into document_chunks.")
             except Exception as e:
+                db.rollback()
                 print(f"[Seed] Error indexing {fname}: {e}")
 
     finally:

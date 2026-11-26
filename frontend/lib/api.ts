@@ -81,6 +81,31 @@ export async function sendAgentChat(message: string, conversationId?: string): P
   return res.json();
 }
 
+export async function approveAgentAction(
+  threadId: string,
+  approved: boolean,
+  feedback?: string,
+  conversationId?: string,
+  taskId?: string
+): Promise<AgentChatResponse> {
+  const headers = await authHeaders({ "Content-Type": "application/json" });
+  const res = await fetch(`${API_BASE}/agent/threads/${encodeURIComponent(threadId)}/approve`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      approved,
+      feedback,
+      conversation_id: conversationId,
+      task_id: taskId,
+    }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Approval submission failed");
+  }
+  return res.json();
+}
+
 export async function fetchConversations(): Promise<ConversationItem[]> {
   const headers = await authHeaders();
   const res = await fetch(`${API_BASE}/conversations`, { headers, cache: "no-store" });

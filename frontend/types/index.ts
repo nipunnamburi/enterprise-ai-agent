@@ -13,9 +13,19 @@ export interface AgentPlan {
   reasoning: string;
 }
 
+export interface ApprovalRequest {
+  type: string;
+  tool_name: string;
+  tool_args: Record<string, any>;
+  reason?: string;
+}
+
 export interface AgentChatResponse {
   task_id: string;
   conversation_id: string;
+  thread_id?: string;
+  status?: 'completed' | 'approval_required';
+  approval_request?: ApprovalRequest | null;
   answer: string;
   sources: string[];
   tools_used: string[];

@@ -5,6 +5,7 @@ class BaseTool(ABC):
     name: str
     description: str
     category: str = "general"
+    requires_approval: bool = False
 
     @abstractmethod
     def get_parameters_schema(self) -> Dict[str, Any]:

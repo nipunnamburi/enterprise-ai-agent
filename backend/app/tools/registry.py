@@ -31,6 +31,14 @@ class ToolRegistry:
     def sync_mcp_client(self, client: MCPClient) -> List[str]:
         return client.sync_to_registry(self)
 
+    async def load_external_mcp_tools(self) -> List[str]:
+        from app.agent.mcp_registry import load_mcp_tools
+        loaded: List[str] = []
+        for adapter in await load_mcp_tools():
+            self.register(adapter)
+            loaded.append(adapter.name)
+        return loaded
+
     def get_tool(self, name: str) -> Optional[BaseTool]:
         return self._tools.get(name)
 
@@ -39,6 +47,7 @@ class ToolRegistry:
             "name": tool.name,
             "description": tool.description,
             "category": tool.category,
+            "requires_approval": getattr(tool, "requires_approval", False),
             "parameters": tool.get_parameters_schema()
         } for tool in self._tools.values()]
 

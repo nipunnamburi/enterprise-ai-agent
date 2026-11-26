@@ -14,8 +14,6 @@ from app.models.business import Customer, Order, Product, SupportTicket, Sale
 from app.models.memory import Memory
 from app.models.document import Document
 from app.rag.document_loader import DocumentLoader
-from app.rag.text_splitter import RecursiveTextSplitter
-from app.rag.vector_store import vector_store
 
 def seed_database():
     print("[Seed] Creating database tables...")
@@ -207,10 +205,8 @@ def seed_database():
             db.commit()
             print("[Seed] Seeded initial long-term user memories.")
 
-        # 8. Ingest Documents into RAG Vector Store
+        # 8. Register Sample Documents (queued for ARQ/Docling ingestion or marked PENDING)
         docs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data/documents"))
-        splitter = RecursiveTextSplitter(chunk_size=600, chunk_overlap=100)
-        
         sample_files = [
             "refund_policy.pdf",
             "employee_handbook.pdf",
@@ -222,39 +218,27 @@ def seed_database():
             fpath = os.path.join(docs_dir, fname)
             if not os.path.exists(fpath):
                 continue
-            
-            # Check if document already tracked in DB
+
             existing_doc = db.query(Document).filter(Document.filename == fname).first()
             if existing_doc:
                 continue
 
             try:
-                sections = DocumentLoader.load_file(fpath)
-                all_chunks = []
-                doc_id = f"doc_{fname.replace('.', '_')}"
-
-                for text_content, meta in sections:
-                    meta["document_id"] = doc_id
-                    chunks = splitter.create_chunks_with_metadata(text_content, meta)
-                    all_chunks.extend(chunks)
-
-                vector_store.add_chunks(all_chunks)
-
                 doc_entry = Document(
-                    id=doc_id,
+                    tenant_id="default",
                     filename=fname,
                     file_type=fname.split(".")[-1],
                     file_size=os.path.getsize(fpath),
-                    chunk_count=len(all_chunks),
+                    chunk_count=0,
                     checksum=DocumentLoader.calculate_checksum(fpath),
-                    status="indexed",
-                    doc_metadata={"chunk_count": len(all_chunks), "source": "sample_seed"}
+                    status="PENDING",
+                    doc_metadata={"source": "sample_seed"}
                 )
                 db.add(doc_entry)
                 db.commit()
-                print(f"[Seed] Indexed {fname} ({len(all_chunks)} chunks) into Chroma vector store.")
+                print(f"[Seed] Registered {fname} (PENDING ingestion).")
             except Exception as e:
-                print(f"[Seed] Error indexing {fname}: {e}")
+                print(f"[Seed] Error registering {fname}: {e}")
 
     finally:
         db.close()

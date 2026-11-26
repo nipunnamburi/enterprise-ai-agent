@@ -3,6 +3,7 @@ import re
 import json
 from typing import Dict, Any, List
 from datetime import datetime, timezone
+from langgraph.types import interrupt
 from app.agents.state import AgentState
 from app.agents.context_manager import context_manager
 from app.agents.llm_client import llm_client
@@ -107,7 +108,11 @@ def retrieve_context_node(state: AgentState) -> Dict[str, Any]:
         elif "refund" in lower_task or "return" in lower_task or "restocking" in lower_task:
             doc_filter = "refund_policy.pdf"
 
-        search_args: Dict[str, Any] = {"query": task_text, "top_k": 3}
+        search_args: Dict[str, Any] = {
+            "query": task_text,
+            "top_k": 3,
+            "tenant_id": state.get("tenant_id", "default"),
+        }
         if doc_filter:
             search_args["document_filter"] = doc_filter
 
@@ -207,20 +212,52 @@ def select_tools_node(state: AgentState) -> Dict[str, Any]:
         "execution_trace": state.get("execution_trace", []) + [trace_entry]
     }
 
+def approval_gate_node(state: AgentState) -> Dict[str, Any]:
+    """Pause execution via LangGraph interrupt() if any pending tool requires human approval."""
+    pending = state.get("pending_tool_calls", [])
+    for call in pending:
+        t_name = call.get("tool_name", "")
+        tool_inst = tool_registry.get_tool(t_name)
+        if tool_inst and getattr(tool_inst, "requires_approval", False):
+            decision = interrupt({
+                "type": "tool_approval",
+                "tool_name": t_name,
+                "tool_args": call.get("arguments", {}),
+                "reason": call.get("reason", f"Tool '{t_name}' requires human approval before execution."),
+            })
+            return {"approval_decision": decision}
+    return {"approval_decision": {"approved": True}}
+
+
 def execute_tools_node(state: AgentState) -> Dict[str, Any]:
     start_time = time.time()
     pending = state.get("pending_tool_calls", [])
     tool_results = list(state.get("tool_results", []))
     tools_used = list(state.get("tools_used", []))
-    
+    approval_decision = state.get("approval_decision") or {"approved": True}
+    is_approved = bool(approval_decision.get("approved", True))
+    feedback = approval_decision.get("feedback")
+
     executed_info = []
     for call in pending:
         t_name = call["tool_name"]
         t_args = call.get("arguments", {})
         t_start = time.time()
-        res = tool_registry.execute_tool(t_name, t_args)
+
+        tool_inst = tool_registry.get_tool(t_name)
+        needs_approval = bool(tool_inst and getattr(tool_inst, "requires_approval", False))
+
+        if needs_approval and not is_approved:
+            res = {
+                "success": False,
+                "rejected": True,
+                "error": f"Tool '{t_name}' execution was rejected by user." + (f" Feedback: {feedback}" if feedback else ""),
+            }
+        else:
+            res = tool_registry.execute_tool(t_name, t_args)
+
         t_dur = round((time.time() - t_start) * 1000, 2)
-        
+
         tool_results.append({
             "tool_name": t_name,
             "arguments": t_args,
@@ -243,6 +280,7 @@ def execute_tools_node(state: AgentState) -> Dict[str, Any]:
         "tool_results": tool_results,
         "tools_used": list(set(tools_used)),
         "pending_tool_calls": [],
+        "approval_decision": None,
         "execution_trace": state.get("execution_trace", []) + [trace_entry]
     }
 

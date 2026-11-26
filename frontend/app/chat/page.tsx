@@ -6,8 +6,9 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { GitBranch, List } from "lucide-react";
 import DecisionTree from "@/components/trace/DecisionTree";
-import { sendAgentChat, fetchConversations, fetchConversationDetails } from "@/lib/api";
-import { ExecutionStepInfo, MessageItem } from "@/types";
+import ActionApprovalCard from "@/components/ActionApprovalCard";
+import { sendAgentChat, approveAgentAction, fetchConversations, fetchConversationDetails } from "@/lib/api";
+import { ApprovalRequest, ExecutionStepInfo, MessageItem } from "@/types";
 
 const QUICK_DEMOS = [
   {
@@ -41,6 +42,12 @@ function ChatContent() {
   const [latestSteps, setLatestSteps] = useState<ExecutionStepInfo[]>([]);
   const [latestDuration, setLatestDuration] = useState<number | null>(null);
   const [traceViewMode, setTraceViewMode] = useState<"decision_tree" | "table">("decision_tree");
+  const [pendingApproval, setPendingApproval] = useState<{
+    threadId: string;
+    taskId: string;
+    conversationId: string;
+    request: ApprovalRequest;
+  } | null>(null);
 
   useEffect(() => {
     fetchConversations()
@@ -90,6 +97,16 @@ function ChatContent() {
       setLatestSteps(response.execution_steps);
       setLatestDuration(response.duration_ms);
 
+      if (response.status === "approval_required" && response.approval_request && response.thread_id) {
+        setPendingApproval({
+          threadId: response.thread_id,
+          taskId: response.task_id,
+          conversationId: response.conversation_id,
+          request: response.approval_request,
+        });
+        return;
+      }
+
       const assistantMsg: MessageItem = {
         id: response.task_id,
         role: "assistant",
@@ -110,6 +127,57 @@ function ChatContent() {
         created_at: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleApprovalDecision = async (approved: boolean, feedback?: string) => {
+    if (!pendingApproval || isProcessing) return;
+    setIsProcessing(true);
+    try {
+      const response = await approveAgentAction(
+        pendingApproval.threadId,
+        approved,
+        feedback,
+        pendingApproval.conversationId,
+        pendingApproval.taskId
+      );
+      setLatestSteps(response.execution_steps);
+      setLatestDuration(response.duration_ms);
+
+      if (response.status === "approval_required" && response.approval_request && response.thread_id) {
+        setPendingApproval({
+          threadId: response.thread_id,
+          taskId: response.task_id,
+          conversationId: response.conversation_id,
+          request: response.approval_request,
+        });
+      } else {
+        setPendingApproval(null);
+        const assistantMsg: MessageItem = {
+          id: response.task_id,
+          role: "assistant",
+          content: response.answer,
+          sources: response.sources,
+          tools_used: response.tools_used,
+          execution_steps: response.execution_steps,
+          confidence: response.confidence,
+          created_at: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+      }
+    } catch (err: any) {
+      setPendingApproval(null);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `err-${Date.now()}`,
+          role: "assistant",
+          content: `Approval Error: ${err.message || "Failed to resume workflow"}`,
+          created_at: new Date().toISOString(),
+        },
+      ]);
     } finally {
       setIsProcessing(false);
     }
@@ -208,9 +276,17 @@ function ChatContent() {
       </form>
 
       {/* Conversation Thread */}
-      {messages.length > 0 && (
+      {(messages.length > 0 || pendingApproval) && (
         <div className="space-y-4 mb-8">
           <h3 className="ref-subheading">Conversation & Response Records</h3>
+          {pendingApproval && (
+            <ActionApprovalCard
+              threadId={pendingApproval.threadId}
+              approvalRequest={pendingApproval.request}
+              isSubmitting={isProcessing}
+              onDecision={handleApprovalDecision}
+            />
+          )}
           {messages.map((msg) => (
             <div
               key={msg.id}

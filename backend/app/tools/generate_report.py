@@ -4,6 +4,7 @@ from app.tools.base import BaseTool
 
 class GenerateReportTool(BaseTool):
     name = "generate_report"
+    requires_approval = True
     description = (
         "Generates a formal, structured executive report from gathered agent results. "
         "Formats executive summaries, empirical evidence, policy citations, actions taken, "

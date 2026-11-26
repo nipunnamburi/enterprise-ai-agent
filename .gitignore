@@ -22,10 +22,11 @@ env/
 .pytest_cache/
 *.egg-info/
 
-# Databases
+# Databases & Local Uploads
 *.db
 *.sqlite
 *.sqlite3
+data/
 
 # Environment variables
 .env

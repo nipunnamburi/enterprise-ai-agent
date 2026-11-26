@@ -1,12 +1,13 @@
 from typing import Dict, Any, Optional
 from app.tools.base import BaseTool
-from app.rag.vector_store import vector_store
+from app.rag.hybrid_retriever import hybrid_retriever
+
 
 class SearchDocumentsTool(BaseTool):
     name = "search_documents"
     description = (
-        "Performs semantic similarity search across the enterprise knowledge base in Chroma. "
-        "Returns relevant document text chunks, source citations (filename, page number), and relevance scores. "
+        "Performs hybrid semantic (pgvector) + lexical (tsvector) search across the enterprise knowledge base. "
+        "Returns relevant document text chunks, source citations (filename, page number), and RRF relevance scores. "
         "Use this tool to find policies, employee handbooks, product documentation, SLAs, and technical manuals."
     )
     category = "knowledge_retrieval"
@@ -17,7 +18,7 @@ class SearchDocumentsTool(BaseTool):
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "Semantic search query describing the information needed."
+                    "description": "Search query describing the information needed."
                 },
                 "top_k": {
                     "type": "integer",
@@ -27,17 +28,32 @@ class SearchDocumentsTool(BaseTool):
                 "document_filter": {
                     "type": "string",
                     "description": "Optional specific filename to filter by (e.g. 'refund_policy.pdf')."
-                }
+                },
+                "tenant_id": {
+                    "type": "string",
+                    "description": "Tenant identifier for strict multi-tenant isolation.",
+                    "default": "default"
+                },
             },
             "required": ["query"]
         }
 
-    def run(self, query: str, top_k: int = 4, document_filter: Optional[str] = None, **kwargs) -> Dict[str, Any]:
-        filter_metadata = None
-        if document_filter:
-            filter_metadata = {"filename": document_filter}
+    def run(
+        self,
+        query: str,
+        top_k: int = 4,
+        document_filter: Optional[str] = None,
+        tenant_id: str = "default",
+        **kwargs,
+    ) -> Dict[str, Any]:
+        filter_metadata = {"filename": document_filter} if document_filter else None
 
-        results = vector_store.search(query=query, top_k=top_k, filter_metadata=filter_metadata)
+        results = hybrid_retriever.search(
+            query=query,
+            top_k=top_k,
+            filter_metadata=filter_metadata,
+            tenant_id=tenant_id,
+        )
 
         if not results:
             return {
@@ -56,9 +72,10 @@ class SearchDocumentsTool(BaseTool):
             "results": results,
             "citations": list(set(citations)),
             "summary_context": "\n\n".join([
-                f"--- {r['source_citation']} (Score: {r['similarity_score']}) ---\n{r['content']}"
+                f"--- {r['source_citation']} (RRF Score: {r['similarity_score']}) ---\n{r['content']}"
                 for r in results
             ])
         }
+
 
 search_documents_tool = SearchDocumentsTool()

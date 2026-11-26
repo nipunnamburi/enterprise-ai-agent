@@ -1,0 +1,18 @@
+[
+  {
+    "id": "refund-window-01",
+    "query": "What is the standard return window and restocking fee in our refund policy?",
+    "expected_output": "Customers may return eligible hardware within 30 days of delivery. Opened non-defective items may be subject to a 15% restocking fee, while defective items under warranty qualify for a full refund.",
+    "retrieval_context": [
+      "Standard Return Window: 30 calendar days from delivery date. Defective hardware within warranty receives a 100% full refund with no restocking fee. Non-defective opened hardware incurs a 15% restocking fee."
+    ]
+  },
+  {
+    "id": "sla-uptime-02",
+    "query": "What is the uptime SLA for the Enterprise Cloud Suite?",
+    "expected_output": "The Enterprise Cloud Suite Annual License includes a 99.95% uptime SLA.",
+    "retrieval_context": [
+      "Enterprise Cloud Suite Annual License: Full SaaS subscription with 99.95% uptime SLA and 24/7 priority support."
+    ]
+  }
+]

@@ -2,6 +2,7 @@ from typing import TypedDict, List, Dict, Any, Optional
 
 class AgentState(TypedDict):
     # Identifiers
+    tenant_id: str
     user_id: str
     conversation_id: str
     task_id: str
@@ -33,4 +34,5 @@ class AgentState(TypedDict):
     iterations: int
     max_iterations: int
     is_complete: bool
+    approval_decision: Optional[Dict[str, Any]]
     error: Optional[str]

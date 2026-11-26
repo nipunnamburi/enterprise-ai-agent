@@ -2,10 +2,13 @@ import uuid
 import time
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request
+from langgraph.types import Command
 from sqlalchemy.orm import Session
 from app.core.database import get_db, SessionLocal
 from app.core.dependencies import get_current_user
+from app.core.rate_limit import rate_limit_dependency
+from app.core.telemetry import set_span_context_attributes
 from app.models.user import User
 from app.models.conversation import Conversation, Message
 from app.models.task import Task, TaskStep, ToolExecution
@@ -18,7 +21,8 @@ from app.schemas.agent import (
     AgentJobSubmitRequest,
     AgentJobResponse,
     AgentResearchRequest,
-    AgentResearchResponse
+    AgentResearchResponse,
+    ThreadApprovalRequest,
 )
 from app.agents.graph import agent_graph
 from app.agents.context_manager import context_manager, RollingContextLedger
@@ -26,23 +30,126 @@ from app.tools.registry import tool_registry
 
 router = APIRouter(prefix="/agent", tags=["Agent Workflows"])
 
-@router.post("/chat", response_model=AgentChatResponse)
-def execute_agent_chat(
+def _extract_interrupt(result: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    interrupts = result.get("__interrupt__")
+    if not interrupts:
+        return None
+    first = interrupts[0]
+    val = getattr(first, "value", first)
+    return val if isinstance(val, dict) else {"type": "tool_approval", "detail": str(val)}
+
+
+def _build_chat_response(
+    final_state: Dict[str, Any],
+    task_id: str,
+    conv_id: str,
+    thread_id: str,
+    duration_ms: float,
+    db: Session,
+    task_record: Optional[Task] = None,
+) -> AgentChatResponse:
+    interrupt_payload = _extract_interrupt(final_state)
+    execution_trace = final_state.get("execution_trace", [])
+    plan_dict = final_state.get("plan")
+    step_infos = [
+        ExecutionStepInfo(
+            step_name=s.get("step_name", "step"),
+            status=s.get("status", "completed"),
+            duration_ms=s.get("duration_ms", 0.0),
+            description=s.get("description", ""),
+            details=s.get("details"),
+        )
+        for s in execution_trace
+    ]
+    plan_obj = AgentPlan(**plan_dict) if plan_dict else None
+
+    if interrupt_payload is not None:
+        if task_record:
+            task_record.status = "awaiting_approval"
+            task_record.plan = plan_dict
+            db.commit()
+        return AgentChatResponse(
+            task_id=task_id,
+            conversation_id=conv_id,
+            thread_id=thread_id,
+            status="approval_required",
+            approval_request=interrupt_payload,
+            answer="Action requires human approval before execution.",
+            sources=final_state.get("sources", []),
+            tools_used=final_state.get("tools_used", []),
+            confidence=final_state.get("confidence", "high"),
+            execution_steps=step_infos,
+            plan=plan_obj,
+            duration_ms=duration_ms,
+        )
+
+    final_answer = final_state.get("final_answer") or "Agent processing finished."
+    sources = final_state.get("sources", [])
+    tools_used = final_state.get("tools_used", [])
+
+    if task_record:
+        task_record.status = "completed"
+        task_record.duration_ms = duration_ms
+        task_record.plan = plan_dict
+        db.commit()
+
+    for step in execution_trace:
+        db.add(TaskStep(
+            task_id=task_id,
+            step_name=step.get("step_name", "step"),
+            status=step.get("status", "completed"),
+            duration_ms=step.get("duration_ms", 0.0),
+            input_data=step.get("details"),
+            output_data={"description": step.get("description")},
+        ))
+
+    for tr in final_state.get("tool_results", []):
+        db.add(ToolExecution(
+            task_id=task_id,
+            tool_name=tr.get("tool_name", "unknown"),
+            arguments=tr.get("arguments", {}),
+            result=tr.get("result", {}),
+            duration_ms=tr.get("duration_ms", 0.0),
+            status="success" if tr.get("result", {}).get("success", True) else "error",
+        ))
+
+    db.add(Message(
+        conversation_id=conv_id,
+        role="assistant",
+        content=final_answer,
+        sources=sources,
+        tools_used=tools_used,
+        execution_steps=execution_trace,
+        confidence=final_state.get("confidence", "high"),
+    ))
+    db.commit()
+
+    return AgentChatResponse(
+        task_id=task_id,
+        conversation_id=conv_id,
+        thread_id=thread_id,
+        status="completed",
+        approval_request=None,
+        answer=final_answer,
+        sources=sources,
+        tools_used=tools_used,
+        confidence=final_state.get("confidence", "high"),
+        execution_steps=step_infos,
+        plan=plan_obj,
+        duration_ms=duration_ms,
+    )
+
+
+@router.post("/chat", response_model=AgentChatResponse, dependencies=[Depends(rate_limit_dependency)])
+async def execute_agent_chat(
     request: AgentChatRequest,
+    raw_request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     start_time = time.time()
     user_id = current_user.id
-    user = current_user
-    if not user:
-        user = db.query(User).first()
-        if user:
-            user_id = user.id
-        else:
-            user = User(id=user_id, email="analyst@enterprise.ai", hashed_password="pwd", full_name="AI Analyst")
-            db.add(user)
-            db.commit()
+    tenant_id = getattr(current_user, "tenant_id", "default") or "default"
 
     # Get or create conversation
     conv_id = request.conversation_id
@@ -59,28 +166,18 @@ def execute_agent_chat(
             db.add(conv)
             db.commit()
 
-    # Save user message
-    user_msg = Message(
-        conversation_id=conv_id,
-        role="user",
-        content=request.message
-    )
-    db.add(user_msg)
+    db.add(Message(conversation_id=conv_id, role="user", content=request.message))
     db.commit()
 
-    # Fetch conversation history & memories
     past_messages = db.query(Message).filter(Message.conversation_id == conv_id).order_by(Message.created_at).all()
     history_dicts = [{"role": m.role, "content": m.content} for m in past_messages]
-
     user_memories_rows = db.query(Memory).filter(Memory.user_id == user_id).all()
     user_memories_list = [m.content for m in user_memories_rows]
 
-    # Summarize older messages if history is long
     compressed_summary = None
     if len(past_messages) > 6:
         compressed_summary = context_manager.summarize_conversation(history_dicts)
 
-    # Initialize Task Record
     task_id = f"task-{uuid.uuid4().hex[:8]}"
     task_record = Task(
         id=task_id,
@@ -88,13 +185,15 @@ def execute_agent_chat(
         user_id=user_id,
         objective=request.message,
         status="running",
-        model_used="gpt-4o"
+        model_used="gpt-4o",
     )
     db.add(task_record)
     db.commit()
 
-    # Initial LangGraph State
+    thread_id = f"{tenant_id}:{user_id}:{conv_id}"
+    set_span_context_attributes(tenant_id=tenant_id, user_id=user_id, thread_id=thread_id)
     initial_state = {
+        "tenant_id": tenant_id,
         "user_id": user_id,
         "conversation_id": conv_id,
         "task_id": task_id,
@@ -116,12 +215,15 @@ def execute_agent_chat(
         "iterations": 0,
         "max_iterations": 5,
         "is_complete": False,
-        "error": None
+        "approval_decision": None,
+        "error": None,
     }
 
-    # Execute LangGraph workflow
+    graph = getattr(raw_request.app.state, "agent_graph", None) or agent_graph
+    config = {"configurable": {"thread_id": thread_id}}
+
     try:
-        final_state = agent_graph.invoke(initial_state)
+        final_state = await graph.ainvoke(initial_state, config=config)
     except Exception as e:
         print(f"[AgentAPI] LangGraph execution error: {e}")
         task_record.status = "failed"
@@ -130,78 +232,37 @@ def execute_agent_chat(
         raise HTTPException(status_code=500, detail=f"Agent workflow error: {str(e)}")
 
     total_duration_ms = round((time.time() - start_time) * 1000, 2)
-    final_answer = final_state.get("final_answer") or "Agent processing finished."
-    sources = final_state.get("sources", [])
-    tools_used = final_state.get("tools_used", [])
-    execution_trace = final_state.get("execution_trace", [])
-    plan_dict = final_state.get("plan")
+    return _build_chat_response(final_state, task_id, conv_id, thread_id, total_duration_ms, db, task_record)
 
-    # Update Task Record
-    task_record.status = "completed"
-    task_record.duration_ms = total_duration_ms
-    task_record.plan = plan_dict
-    db.commit()
 
-    # Persist Task Steps & Tool Executions
-    for step in execution_trace:
-        step_rec = TaskStep(
-            task_id=task_id,
-            step_name=step.get("step_name", "step"),
-            status=step.get("status", "completed"),
-            duration_ms=step.get("duration_ms", 0.0),
-            input_data=step.get("details"),
-            output_data={"description": step.get("description")}
+@router.post("/threads/{thread_id}/approve", response_model=AgentChatResponse, dependencies=[Depends(rate_limit_dependency)])
+async def approve_agent_thread(
+    thread_id: str,
+    body: ThreadApprovalRequest,
+    raw_request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Resume a paused LangGraph thread after HITL approval/rejection."""
+    start_time = time.time()
+    graph = getattr(raw_request.app.state, "agent_graph", None) or agent_graph
+    config = {"configurable": {"thread_id": thread_id}}
+
+    try:
+        final_state = await graph.ainvoke(
+            Command(resume={"approved": body.approved, "feedback": body.feedback}),
+            config=config,
         )
-        db.add(step_rec)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to resume thread '{thread_id}': {str(e)}")
 
-    for tr in final_state.get("tool_results", []):
-        t_exec = ToolExecution(
-            task_id=task_id,
-            tool_name=tr.get("tool_name", "unknown"),
-            arguments=tr.get("arguments", {}),
-            result=tr.get("result", {}),
-            duration_ms=tr.get("duration_ms", 0.0),
-            status="success" if tr.get("result", {}).get("success", True) else "error"
-        )
-        db.add(t_exec)
+    parts = thread_id.split(":", 2)
+    conv_id = body.conversation_id or (parts[2] if len(parts) == 3 else final_state.get("conversation_id", ""))
+    task_id = body.task_id or final_state.get("task_id", f"task-{uuid.uuid4().hex[:8]}")
+    task_record = db.query(Task).filter(Task.id == task_id).first()
+    total_duration_ms = round((time.time() - start_time) * 1000, 2)
 
-    # Save Assistant Message
-    assistant_msg = Message(
-        conversation_id=conv_id,
-        role="assistant",
-        content=final_answer,
-        sources=sources,
-        tools_used=tools_used,
-        execution_steps=execution_trace,
-        confidence=final_state.get("confidence", "high")
-    )
-    db.add(assistant_msg)
-    db.commit()
-
-    # Build response payload
-    step_infos = [
-        ExecutionStepInfo(
-            step_name=s.get("step_name", "step"),
-            status=s.get("status", "completed"),
-            duration_ms=s.get("duration_ms", 0.0),
-            description=s.get("description", ""),
-            details=s.get("details")
-        ) for s in execution_trace
-    ]
-
-    plan_obj = AgentPlan(**plan_dict) if plan_dict else None
-
-    return AgentChatResponse(
-        task_id=task_id,
-        conversation_id=conv_id,
-        answer=final_answer,
-        sources=sources,
-        tools_used=tools_used,
-        confidence=final_state.get("confidence", "high"),
-        execution_steps=step_infos,
-        plan=plan_obj,
-        duration_ms=total_duration_ms
-    )
+    return _build_chat_response(final_state, task_id, conv_id, thread_id, total_duration_ms, db, task_record)
 
 @router.get("/tasks/{task_id}")
 def get_task_details(task_id: str, db: Session = Depends(get_db)):

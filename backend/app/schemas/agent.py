@@ -41,6 +41,9 @@ class AgentChatRequest(BaseModel):
 class AgentChatResponse(BaseModel):
     task_id: str
     conversation_id: str
+    thread_id: Optional[str] = None
+    status: str = "completed"
+    approval_request: Optional[Dict[str, Any]] = None
     answer: str
     sources: List[str]
     tools_used: List[str]
@@ -48,6 +51,13 @@ class AgentChatResponse(BaseModel):
     execution_steps: List[ExecutionStepInfo]
     plan: Optional[AgentPlan] = None
     duration_ms: float
+
+
+class ThreadApprovalRequest(BaseModel):
+    approved: bool
+    feedback: Optional[str] = None
+    conversation_id: Optional[str] = None
+    task_id: Optional[str] = None
 
 class AgentResearchRequest(BaseModel):
     topic: str = Field(..., description="The comprehensive research inquiry or subject")

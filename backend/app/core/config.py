@@ -4,14 +4,20 @@ from typing import Optional, Union, List
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(case_sensitive=True, env_file=".env", extra="allow")
+    model_config = SettingsConfigDict(
+        case_sensitive=True,
+        env_file=".env",
+        extra="ignore",
+    )
 
     PROJECT_NAME: str = "Enterprise AI Research & Automation Agent"
-    VERSION: str = "1.0.0"
+    VERSION: str = "2.0.0"
     API_V1_STR: str = "/api/v1"
-    
+
     # Environment & Security
+    JWT_SECRET: Optional[str] = None
     SECRET_KEY: str = "super-secret-enterprise-ai-key-change-in-production"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     ALGORITHM: str = "HS256"
@@ -41,35 +47,69 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, tuple, set)):
             return [str(origin).strip() for origin in v if str(origin).strip()]
         return []
-    
-    # Database
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", 
-        f"sqlite:///{os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../enterprise_ai.db'))}"
-    )
-    
-    # Chroma Vector DB
-    CHROMA_PERSIST_DIR: str = os.getenv(
-        "CHROMA_PERSIST_DIR",
-        os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../data/chroma_db'))
-    )
-    CHROMA_COLLECTION_NAME: str = os.getenv("CHROMA_COLLECTION_NAME", "enterprise_knowledge_base")
-    
+
+    @property
+    def jwt_signing_key(self) -> str:
+        return self.JWT_SECRET or self.SECRET_KEY
+
+    # PostgreSQL + pgvector (local or managed cloud e.g. Neon / Supabase)
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/enterprise_agent"
+
+    @property
+    def async_database_url(self) -> str:
+        if self.DATABASE_URL.startswith("postgresql+asyncpg://"):
+            return self.DATABASE_URL
+        if self.DATABASE_URL.startswith("postgresql+psycopg://"):
+            return self.DATABASE_URL.replace("postgresql+psycopg://", "postgresql+asyncpg://", 1)
+        if self.DATABASE_URL.startswith("postgresql://"):
+            return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if self.DATABASE_URL.startswith("postgres://"):
+            return self.DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+        return self.DATABASE_URL
+
+    @property
+    def sync_database_url(self) -> str:
+        url = self.DATABASE_URL
+        if url.startswith("postgresql+asyncpg://"):
+            return url.replace("postgresql+asyncpg://", "postgresql+psycopg://", 1)
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+psycopg://", 1)
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+psycopg://", 1)
+        return url
+
+    @property
+    def checkpointer_dsn(self) -> str:
+        url = self.DATABASE_URL
+        for prefix in ("postgresql+asyncpg://", "postgresql+psycopg://", "postgres://"):
+            if url.startswith(prefix):
+                return url.replace(prefix, "postgresql://", 1)
+        return url
+
+    # Redis & ARQ (local or managed cloud e.g. Upstash)
+    REDIS_URL: str = "redis://localhost:6379/0"
+    RATE_LIMIT_REQUESTS: int = 60
+    RATE_LIMIT_WINDOW_SECONDS: int = 60
+
     # OpenAI & LLM
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY", None)
-    LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o")
-    FAST_LLM_MODEL: str = os.getenv("FAST_LLM_MODEL", "gpt-4o-mini")
-    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
-    
+    OPENAI_API_KEY: Optional[str] = None
+    LLM_MODEL: str = "gpt-4o"
+    FAST_LLM_MODEL: str = "gpt-4o-mini"
+    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    EMBEDDING_DIMENSIONS: int = 1536
+
     # RAG Settings
-    CHUNK_SIZE: int = 600
-    CHUNK_OVERLAP: int = 100
+    CHUNK_SIZE: int = 800
+    CHUNK_OVERLAP: int = 120
     TOP_K_RESULTS: int = 4
-    
-    # Storage for uploaded documents
-    UPLOAD_DIR: str = os.getenv(
-        "UPLOAD_DIR",
-        os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../data/documents'))
-    )
+
+    # Local storage for uploaded documents
+    UPLOAD_DIR: str = "./data/uploads"
+
+    # OpenTelemetry / Langfuse
+    OTEL_EXPORTER_OTLP_ENDPOINT: Optional[str] = None
+    OTEL_EXPORTER_OTLP_HEADERS: Optional[str] = None
+    OTEL_SERVICE_NAME: str = "enterprise-ai-agent"
+
 
 settings = Settings()
