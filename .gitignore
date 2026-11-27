@@ -38,5 +38,4 @@ data/
 Thumbs.db
 .vscode/
 .idea/
-.vercel
 .env*
