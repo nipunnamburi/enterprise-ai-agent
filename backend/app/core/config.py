@@ -52,20 +52,30 @@ class Settings(BaseSettings):
     def jwt_signing_key(self) -> str:
         return self.JWT_SECRET or self.SECRET_KEY
 
-    # PostgreSQL + pgvector (local or managed cloud e.g. Neon / Supabase)
+    # PostgreSQL + pgvector (local or managed cloud e.g. Neon)
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/enterprise_agent"
+    DATABASE_URL_UNPOOLED: Optional[str] = None
+
+    @staticmethod
+    def _to_asyncpg_url(url: str) -> str:
+        if url.startswith("postgresql+psycopg://"):
+            url = url.replace("postgresql+psycopg://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://"):
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        # asyncpg uses ssl=require instead of sslmode=require and does not support channel_binding
+        url = url.replace("sslmode=", "ssl=")
+        url = url.replace("&channel_binding=require", "").replace("?channel_binding=require&", "?").replace("?channel_binding=require", "")
+        return url
 
     @property
     def async_database_url(self) -> str:
-        if self.DATABASE_URL.startswith("postgresql+asyncpg://"):
-            return self.DATABASE_URL
-        if self.DATABASE_URL.startswith("postgresql+psycopg://"):
-            return self.DATABASE_URL.replace("postgresql+psycopg://", "postgresql+asyncpg://", 1)
-        if self.DATABASE_URL.startswith("postgresql://"):
-            return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
-        if self.DATABASE_URL.startswith("postgres://"):
-            return self.DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
-        return self.DATABASE_URL
+        return self._to_asyncpg_url(self.DATABASE_URL)
+
+    @property
+    def unpooled_async_database_url(self) -> str:
+        return self._to_asyncpg_url(self.DATABASE_URL_UNPOOLED or self.DATABASE_URL)
 
     @property
     def sync_database_url(self) -> str:
@@ -80,7 +90,7 @@ class Settings(BaseSettings):
 
     @property
     def checkpointer_dsn(self) -> str:
-        url = self.DATABASE_URL
+        url = self.DATABASE_URL_UNPOOLED or self.DATABASE_URL
         for prefix in ("postgresql+asyncpg://", "postgresql+psycopg://", "postgres://"):
             if url.startswith(prefix):
                 return url.replace(prefix, "postgresql://", 1)

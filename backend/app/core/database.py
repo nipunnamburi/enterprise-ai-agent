@@ -42,14 +42,12 @@ async def get_async_db():
 
 
 async def ensure_pgvector_extension():
-    """Ensure the pgvector extension is enabled in PostgreSQL.
-
-    Catches permission errors gracefully for managed Postgres providers (e.g. Neon, Supabase)
-    where extensions are enabled via the provider dashboard.
-    """
+    """Ensure the pgvector extension is enabled in PostgreSQL using the unpooled/direct connection."""
     try:
-        async with async_engine.begin() as conn:
+        unpooled_engine = create_async_engine(settings.unpooled_async_database_url, echo=False)
+        async with unpooled_engine.begin() as conn:
             await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+        await unpooled_engine.dispose()
     except Exception as exc:
         print(
             f"[Database Warning] Could not run 'CREATE EXTENSION IF NOT EXISTS vector;' ({exc}). "
